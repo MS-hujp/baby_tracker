@@ -160,6 +160,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     marginTop: 20,
+    borderWidth: 1,
+    borderColor: "red",
   },
   bottomNavwrap: {
     display: "flex",
