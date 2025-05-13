@@ -12,7 +12,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   innerContainer: {
-    height: "auto",
     paddingHorizontal: 10,
   },
   header: {
@@ -165,17 +164,16 @@ const styles = StyleSheet.create({
   },
   navigation: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#fff",
+    justifyContent: "space-between",
     paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#eee",
+    marginHorizontal: 10,
   },
   bottomNavwrap: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
+    fontSize: 12,
   },
   bottomNav: {
     width: 45,

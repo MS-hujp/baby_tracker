@@ -270,7 +270,7 @@ const HomeScreen = () => {
           <Text>ログアウト</Text>
         </View>
         <View style={styles.bottomNavwrap}>
-          <View style={[styles.bottomNav, { backgroundColor: "#66cc9e" }]}>
+          <View style={[styles.bottomNav, { backgroundColor: "#66cc9e", marginRight: 5 }]}>
             <TablerIcon
               xml={homeIcon}
               width={30}
@@ -282,7 +282,7 @@ const HomeScreen = () => {
           <Text>ホーム</Text>
         </View>
         <View style={styles.bottomNavwrap}>
-          <View style={[styles.bottomNav, { backgroundColor: "#999999" }]}>
+          <View style={[styles.bottomNav, { backgroundColor: "#999999", marginLeft: 5 }]}>
             <TablerIcon
               xml={settingsIcon}
               width={30}
