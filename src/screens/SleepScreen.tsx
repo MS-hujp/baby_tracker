@@ -25,7 +25,7 @@ const SleepScreen = () => {
       >
         <View style={styles.innerContainer}>
           <Header {...headerProps} />
-          睡眠
+          <View>睡眠</View>
         </View>
       </ScrollView>
       <BottomNavigation />

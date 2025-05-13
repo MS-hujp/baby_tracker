@@ -25,7 +25,7 @@ const MeasurementScreen = () => {
       >
         <View style={styles.innerContainer}>
           <Header {...headerProps} />
-          測定
+          <View>測定</View>
         </View>
       </ScrollView>
       <BottomNavigation />

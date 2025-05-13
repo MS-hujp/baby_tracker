@@ -35,7 +35,7 @@ const DiaperScreen = () => {
             fillColor="none"
             strokeWidth={1.5}
           />
-          おむつ交換
+          <View>おむつ交換</View>
         </View>
       </ScrollView>
       <BottomNavigation />

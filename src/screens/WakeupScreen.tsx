@@ -25,7 +25,7 @@ const WakeupScreen = () => {
       >
         <View style={styles.innerContainer}>
           <Header {...headerProps} />
-          起きる
+          <View>起きる</View>
         </View>
       </ScrollView>
       <BottomNavigation />
