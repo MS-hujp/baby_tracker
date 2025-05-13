@@ -4,7 +4,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffe5e5",
-    padding: 10,
+    paddingTop: 10,
+    paddingHorizontal: 10,
+    paddingBottom: 0,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  innerContainer: {
+    height: "auto",
+    paddingHorizontal: 10,
   },
   header: {
     backgroundColor: "#ffadad",
@@ -15,7 +24,6 @@ const styles = StyleSheet.create({
   profileContainer: {
     flexDirection: "row",
     alignItems: "center",
-    width: "90%",
   },
   profileName: {
     fontSize: 22,
@@ -67,13 +75,13 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    height: "100%",
+    height: "auto",
     width: "60%",
   },
   recordRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    height: "45%",
+    height: "auto",
     width: "100%",
     gap: 5,
   },
@@ -83,7 +91,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     borderRadius: 10,
-    height: "100%",
     width: "60%",
     paddingVertical: 5,
     paddingHorizontal: 3,
@@ -97,7 +104,7 @@ const styles = StyleSheet.create({
   recordMeasurements: {
     display: "flex",
     width: "auto",
-    height: "100%",
+    height: "auto",
     flexDirection: "column",
     justifyContent: "space-between",
     backgroundColor: "#73ace6",
@@ -143,7 +150,7 @@ const styles = StyleSheet.create({
     color: "#454444",
     fontSize: 14,
     fontWeight: "bold",
-    width: "55%",
+    width: "45%",
   },
   timestamp: {
     color: "#454444",
@@ -159,9 +166,10 @@ const styles = StyleSheet.create({
   navigation: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginTop: 20,
-    borderWidth: 1,
-    borderColor: "red",
+    backgroundColor: "#fff",
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
   },
   bottomNavwrap: {
     display: "flex",
