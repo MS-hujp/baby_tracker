@@ -161,33 +161,7 @@ const styles = StyleSheet.create({
     color: "rgba(69, 68, 68, 0.5)",
     fontSize: 10,
     width: "25%",
-  },
-  navigation: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 10,
-    marginHorizontal: 10,
-  },
-  bottomNavwrap: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: 12,
-  },
-  bottomNav: {
-    width: 45,
-    height: 45,
-    borderRadius: 10,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  navButton: {
-    backgroundColor: "#eee",
-    padding: 10,
-    borderRadius: 10,
-  },
+  }
 });
 
 export default styles;

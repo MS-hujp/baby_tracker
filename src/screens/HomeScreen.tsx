@@ -11,17 +11,13 @@ import {
   babyBottleIcon,
   diaperIcon,
   heightIcon,
-  homeIcon,
-  logoutIcon,
-  settingsIcon,
   sleepIcon,
-  statisticsIcon,
   thermometerIcon,
-  timelineIcon,
   wakeupIcon,
-  weightIcon,
+  weightIcon
 } from "../assets/icons/icons";
 import TablerIcon from "../components/TablerIcon";
+import BottomNavigation from "../components/navigation/BottomNavigation";
 import styles from "../styles/HomeScreenStyles";
 
 const HomeScreen = () => {
@@ -256,73 +252,7 @@ const HomeScreen = () => {
           </View>
         </View>
       </ScrollView>
-      <View style={styles.navigation}>
-        <View style={styles.bottomNavwrap}>
-          <View style={[styles.bottomNav, { backgroundColor: "#e6ac73" }]}>
-            <TablerIcon
-              xml={logoutIcon}
-              width={30}
-              height={30}
-              strokeColor="#fff"
-              fillColor="none"
-            />
-          </View>
-          <Text>ログアウト</Text>
-        </View>
-        <View style={styles.bottomNavwrap}>
-          <View style={[styles.bottomNav, { backgroundColor: "#66cc9e", marginRight: 5 }]}>
-            <TablerIcon
-              xml={homeIcon}
-              width={30}
-              height={30}
-              strokeColor="#fff"
-              fillColor="none"
-            />
-          </View>
-          <Text>ホーム</Text>
-        </View>
-        <View style={styles.bottomNavwrap}>
-          <View style={[styles.bottomNav, { backgroundColor: "#999999", marginLeft: 5 }]}>
-            <TablerIcon
-              xml={settingsIcon}
-              width={30}
-              height={30}
-              strokeColor="#fff"
-              fillColor="none"
-            />
-          </View>
-          <Text>設定</Text>
-        </View>
-        <View style={styles.bottomNavwrap}>
-          <View
-            style={[
-              styles.bottomNav,
-              { backgroundColor: "rgba(137, 196, 255, 1.0)" },
-            ]}
-          >
-            <TablerIcon
-              xml={timelineIcon}
-              width={30}
-              height={30}
-              strokeColor="#fff"
-              fillColor="none"
-            />
-          </View>
-          <Text>タイムライン</Text>
-        </View>
-        <View style={styles.bottomNavwrap}>
-          <View style={[styles.bottomNav, { backgroundColor: "#ac73e6" }]}>
-            <TablerIcon
-              xml={statisticsIcon}
-              width={30}
-              height={30}
-              strokeColor="#fff"
-              fillColor="none"
-            />
-          </View>
-          <Text>統計</Text>
-        </View>
-      </View>
+      <BottomNavigation />
     </SafeAreaView>
   );
 };
