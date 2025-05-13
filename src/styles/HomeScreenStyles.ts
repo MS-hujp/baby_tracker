@@ -25,17 +25,31 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     color: "#333",
   },
-  recordSection: {
+  recordSectionContainer: {
     backgroundColor: "#fff",
+    marginBottom: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     height: "auto",
+    borderRadius: 20,
+  },
+  recordSectionTitle: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    marginBottom: 5,
+  },
+  recordSectionTitleText: {
+    color: "#454444",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  recordSection: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    borderRadius: 20,
     gap: 5,
-    marginBottom: 20,
   },
   recordColumn: {
     display: "flex",
@@ -86,11 +100,23 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     gap: 5,
   },
-  timeLineSection: {
+  timeLineSectionContainer: {
     backgroundColor: "#fff",
+    marginBottom: 10,
+    paddingVertical: 5,
     height: "auto",
     borderRadius: 20,
-    marginBottom: 20,
+  },
+  timeLineSection: {
+  },
+  timeLineSectionTitle: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    marginHorizontal: 10,
+    marginBottom: 5,
+    gap: 5,
   },
   timeLineItems: {
     flexDirection: "column",
