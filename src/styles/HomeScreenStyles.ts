@@ -14,39 +14,6 @@ const styles = StyleSheet.create({
   innerContainer: {
     paddingHorizontal: 10,
   },
-  header: {
-    backgroundColor: "#ffadad",
-    padding: 10,
-    borderRadius: 20,
-    marginBottom: 20,
-  },
-  profileContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  profileName: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginLeft: 10,
-    color: "#333",
-  },
-  profileAge: {
-    fontSize: 16,
-    color: "#555",
-  },
-  participants: {
-    flexDirection: "row",
-    marginTop: 10,
-  },
-  iconButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginRight: 10,
-  },
-  participantText: {
-    fontSize: 16,
-    marginLeft: 5,
-  },
   infoBox: {
     backgroundColor: "#fff",
     padding: 10,

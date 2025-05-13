@@ -1,4 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { RootStackParamList } from "../../../App";
 import {
     homeIcon,
     logoutIcon,
@@ -8,7 +11,11 @@ import {
 } from "../../assets/icons/icons";
 import TablerIcon from "../TablerIcon";
 
+type BottomNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
 const BottomNavigation = () => {
+  const navigation = useNavigation<BottomNavigationProp>();
+
   return (
     <View style={styles.navigation}>
       <View style={styles.bottomNavwrap}>
@@ -23,7 +30,10 @@ const BottomNavigation = () => {
         </View>
         <Text>ログアウト</Text>
       </View>
-      <View style={styles.bottomNavwrap}>
+      <TouchableOpacity 
+        style={styles.bottomNavwrap}
+        onPress={() => navigation.navigate('Home')}
+      >
         <View style={[styles.bottomNav, { backgroundColor: "#66cc9e", marginRight: 5 }]}>
           <TablerIcon
             xml={homeIcon}
@@ -34,7 +44,7 @@ const BottomNavigation = () => {
           />
         </View>
         <Text>ホーム</Text>
-      </View>
+      </TouchableOpacity>
       <View style={styles.bottomNavwrap}>
         <View style={[styles.bottomNav, { backgroundColor: "#999999", marginLeft: 5 }]}>
           <TablerIcon

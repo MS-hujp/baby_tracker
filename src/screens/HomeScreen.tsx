@@ -1,4 +1,4 @@
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
 import {
   SafeAreaView,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { RootStackParamList } from "../../App";
 import {
   babyBottleIcon,
   diaperIcon,
@@ -14,13 +15,29 @@ import {
   sleepIcon,
   thermometerIcon,
   wakeupIcon,
-  weightIcon
+  weightIcon,
 } from "../assets/icons/icons";
 import TablerIcon from "../components/TablerIcon";
+import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 import styles from "../styles/HomeScreenStyles";
 
-const HomeScreen = () => {
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
+
+interface HomeScreenProps {
+  navigation: HomeScreenNavigationProp;
+}
+
+const HomeScreen = ({ navigation }: HomeScreenProps) => {
+  const headerProps = {
+    babyName: "まきちゃん",
+    ageInDays: 30,
+    participants: [
+      { name: "ゆか", color: "#FFF" },
+      { name: "けん", color: "blue" }
+    ]
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -31,23 +48,7 @@ const HomeScreen = () => {
         alwaysBounceVertical={true}
       >
         <View style={styles.innerContainer}>
-          <View style={styles.header}>
-            <View style={styles.profileContainer}>
-              <FontAwesome name="user-circle" size={50} color="white" />
-              <Text style={styles.profileName}>まきちゃん</Text>
-              <Text style={styles.profileAge}>(生後30日)</Text>
-            </View>
-            <View style={styles.participants}>
-              <TouchableOpacity style={styles.iconButton}>
-                <MaterialIcons name="child-care" size={24} color="#FFF" />
-                <Text style={styles.participantText}>ゆか</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton}>
-                <MaterialIcons name="child-care" size={24} color="blue" />
-                <Text style={styles.participantText}>けん</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          <Header {...headerProps} />
 
           <View style={styles.infoBox}>
             <Text style={styles.infoText}>次の授乳は11:02頃</Text>
@@ -61,6 +62,7 @@ const HomeScreen = () => {
               <View style={styles.recordRow}>
                 <TouchableOpacity
                   style={[styles.recordButton, { backgroundColor: "#66cc9e" }]}
+                  onPress={() => navigation.navigate('Feeding')}
                 >
                   <TablerIcon
                     xml={babyBottleIcon}
