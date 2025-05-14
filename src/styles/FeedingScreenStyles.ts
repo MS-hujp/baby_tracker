@@ -45,6 +45,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "rgba(137, 196, 255, 1.0)",
   },
+  recordMotherOrMilk: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   motherSection: {
     display: "flex",
     flexDirection: "row",
@@ -57,6 +64,26 @@ const styles = StyleSheet.create({
     width: "40%",
     paddingVertical: 5,
     paddingHorizontal: 3,
+  },
+  selectedSection: {
+    borderWidth: 5,
+    borderColor: "#b3afaf",
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: "#FFF",
+    marginLeft: 5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  checkboxInner: {
+    width: 12,
+    height: 12,
+    backgroundColor: "#FFF",
+    borderRadius: 2,
   },
   motherIcon: {
     width: 40,
@@ -71,7 +98,53 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
   },
-
+  milkSection: {
+    display: "flex",
+    flexDirection: "row",
+    backgroundColor: "#8DD2F2",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    marginBottom: 5,
+    gap: 5,
+    borderRadius: 10,
+    width: "40%",
+    paddingVertical: 5,
+    paddingHorizontal: 3,
+  },
+  milkIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  milkIconText: {
+    color: "#FFF",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  timePickerSection: {
+    marginTop: 20,
+    paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0e0",
+  },
+  timePickerLabel: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#454545",
+    marginBottom: 10,
+    marginLeft: 5,
+  },
+  timePickerContainer: {
+    backgroundColor: "#f5f5f5",
+    borderRadius: 10,
+    padding: 5,
+  },
+  timePicker: {
+    height: 120,
+  },
 });
 
 export default styles; 
