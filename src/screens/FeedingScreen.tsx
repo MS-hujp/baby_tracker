@@ -1,7 +1,13 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Picker } from '@react-native-picker/picker';
 import React, { useState } from "react";
 import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
-import { babyBottleIcon, milkCanIcon, motherIcon } from "../assets/icons/icons";
+import {
+  babyBottleIcon,
+  clockIcon,
+  milkCanIcon,
+  motherIcon,
+} from "../assets/icons/icons";
 import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 import TablerIcon from "../components/TablerIcon";
@@ -13,6 +19,8 @@ const FeedingScreen = () => {
     formulaMilk: false,
   });
   const [selectedTime, setSelectedTime] = useState(new Date());
+  const [leftDuration, setLeftDuration] = useState(0);
+  const [rightDuration, setRightDuration] = useState(0);
 
   const headerProps = {
     babyName: "まきちゃん",
@@ -23,10 +31,10 @@ const FeedingScreen = () => {
     ],
   };
 
-  const toggleFeeding = (type: 'motherMilk' | 'formulaMilk') => {
-    setSelectedFeedings(prev => ({
+  const toggleFeeding = (type: "motherMilk" | "formulaMilk") => {
+    setSelectedFeedings((prev) => ({
       ...prev,
-      [type]: !prev[type]
+      [type]: !prev[type],
     }));
   };
 
@@ -35,6 +43,8 @@ const FeedingScreen = () => {
       setSelectedTime(selectedDate);
     }
   };
+
+  const [selectedValue, setSelectedValue] = useState("TypeScript");
 
   return (
     <SafeAreaView style={styles.container}>
@@ -62,12 +72,17 @@ const FeedingScreen = () => {
             </View>
 
             <View style={styles.recordMotherOrMilk}>
-              <Pressable 
-                style={[styles.motherSection, selectedFeedings.motherMilk && styles.selectedSection]} 
-                onPress={() => toggleFeeding('motherMilk')}
+              <Pressable
+                style={[
+                  styles.motherSection,
+                  selectedFeedings.motherMilk && styles.selectedSection,
+                ]}
+                onPress={() => toggleFeeding("motherMilk")}
               >
                 <View style={styles.checkbox}>
-                  {selectedFeedings.motherMilk && <View style={styles.checkboxInner} />}
+                  {selectedFeedings.motherMilk && (
+                    <View style={styles.checkboxInner} />
+                  )}
                 </View>
                 <View style={styles.motherIcon}>
                   <TablerIcon
@@ -81,12 +96,17 @@ const FeedingScreen = () => {
                 <Text style={styles.motherIconText}>母乳</Text>
               </Pressable>
 
-              <Pressable 
-                style={[styles.milkSection, selectedFeedings.formulaMilk && styles.selectedSection]}
-                onPress={() => toggleFeeding('formulaMilk')}
+              <Pressable
+                style={[
+                  styles.milkSection,
+                  selectedFeedings.formulaMilk && styles.selectedSection,
+                ]}
+                onPress={() => toggleFeeding("formulaMilk")}
               >
                 <View style={styles.checkbox}>
-                  {selectedFeedings.formulaMilk && <View style={styles.checkboxInner} />}
+                  {selectedFeedings.formulaMilk && (
+                    <View style={styles.checkboxInner} />
+                  )}
                 </View>
                 <View style={styles.milkIcon}>
                   <TablerIcon
@@ -102,7 +122,18 @@ const FeedingScreen = () => {
             </View>
 
             <View style={styles.timePickerSection}>
-              <Text style={styles.timePickerLabel}>時間</Text>
+              <View style={styles.recordSectionTitle}>
+                <View style={styles.clockIcon}>
+                  <TablerIcon
+                    xml={clockIcon}
+                    width={30}
+                    height={30}
+                    strokeColor="#FFF"
+                  />
+                </View>
+                <Text style={styles.timePickerLabel}>時間</Text>
+              </View>
+
               <View style={styles.timePickerContainer}>
                 <DateTimePicker
                   value={selectedTime}
@@ -111,10 +142,71 @@ const FeedingScreen = () => {
                   display="spinner"
                   onChange={handleTimeChange}
                   style={styles.timePicker}
+                  textColor="black"
                 />
               </View>
+
+              <View style={styles.LRSection}>
+                <Text style={styles.leftLabel}>左</Text>
+                <Text style={styles.rightLabel}>右</Text>
+              </View>
+              
+              <View style={styles.durationPickerContainerWrap}>
+                <View style={styles.durationPickerContainer}>
+                  <Picker
+                    selectedValue={leftDuration}
+                    onValueChange={(itemValue) => setLeftDuration(itemValue)}
+                    style={styles.durationPicker}
+                    itemStyle={{ height: 50, fontSize: 16 }}
+                  >
+                    {Array.from({ length: 61 }, (_, i) => (
+                      <Picker.Item 
+                        key={i} 
+                        label={`${i}分`} 
+                        value={i}
+                        color="black"
+                      />
+                    ))}
+                  </Picker>
+                </View>
+                <View style={styles.durationPickerContainer}>
+                  <Picker
+                    selectedValue={rightDuration}
+                    onValueChange={(itemValue) => setRightDuration(itemValue)}
+                    style={styles.durationPicker}
+                    itemStyle={{ height: 50, fontSize: 16 }}
+                  >
+                    {Array.from({ length: 61 }, (_, i) => (
+                      <Picker.Item 
+                        key={i} 
+                        label={`${i}分`} 
+                        value={i}
+                        color="black"
+                      />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
+
+              <View style={styles.buttonContainer}>
+                <Pressable
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => {
+                    // キャンセル処理をここに追加
+                  }}
+                >
+                  <Text style={styles.buttonText}>キャンセル</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.button, styles.okButton]}
+                  onPress={() => {
+                    // OK処理をここに追加
+                  }}
+                >
+                  <Text style={styles.buttonText}>OK</Text>
+                </Pressable>
+              </View>
             </View>
-            <Text style={styles.recordSectionTitleText}>記録</Text>
           </View>
         </View>
       </ScrollView>

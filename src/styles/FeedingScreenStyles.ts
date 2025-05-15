@@ -7,12 +7,14 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingHorizontal: 10,
     paddingBottom: 0,
+    height: "auto",
   },
   scrollView: {
     flex: 1,
   },
   innerContainer: {
     paddingHorizontal: 10,
+    height: "auto",
   },
   recordSectionContainer: {
     backgroundColor: "#fff",
@@ -125,26 +127,87 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   timePickerSection: {
-    marginTop: 20,
-    paddingTop: 15,
-    borderTopWidth: 1,
-    borderTopColor: "#e0e0e0",
+    marginVertical: 20,
+  },
+  clockIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#b8e68a",
   },
   timePickerLabel: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#454545",
-    marginBottom: 10,
-    marginLeft: 5,
+    marginBottom: 5,
+    marginLeft: 10,
   },
   timePickerContainer: {
     backgroundColor: "#f5f5f5",
-    borderRadius: 10,
-    padding: 5,
+    borderRadius: 5,
+    marginTop: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   timePicker: {
-    height: 120,
+    height: 80,
+  },
+  LRSection: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 180,
+  },
+  leftLabel: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  rightLabel: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  durationPickerContainerWrap: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    width: "100%",
+  },
+  durationPickerContainer: {
+    backgroundColor: "#ffffff",
+    marginVertical: 5,
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  durationPicker: {
+    height: 30,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+    marginTop: 50,
+    marginBottom: 10,
+  },
+  button: {
+    width: 130,
+    height: 40,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#9e9e9e',
+  },
+  okButton: {
+    backgroundColor: '#ff69b4',
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
-export default styles; 
+export default styles;
