@@ -136,6 +136,7 @@ const MeasurementScreen = () => {
                     </View>
                     <Text style={styles.dateLabel}>日付</Text>
                   </View>
+                  <View style={styles.datePickerContainer}>
                   <DateTimePicker
                     value={selectedDate}
                     mode="date"
@@ -144,6 +145,7 @@ const MeasurementScreen = () => {
                     style={styles.datePicker}
                     textColor="black"
                   />
+                  </View>
                 </View>
               </View>
 

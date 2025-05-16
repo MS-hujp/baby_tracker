@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     color: "#45444",
   },
   datePickerContainer: {
-    marginRight: 10,
+    marginLeft: 43,
   },
   datePicker: {
     flex: 1,
