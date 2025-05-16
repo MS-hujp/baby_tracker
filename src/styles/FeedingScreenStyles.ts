@@ -208,6 +208,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  milkAmountPickerSection: {
+    marginVertical: 30,
+  },
+  milkCanIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#8DD2F2",
+  },
+  milkAmountPickerContainer: {
+    backgroundColor: "#ffffff",
+    marginVertical: 5,
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  milkAmountPicker: {
+    height: 30,
+  },
+
 });
 
 export default styles;

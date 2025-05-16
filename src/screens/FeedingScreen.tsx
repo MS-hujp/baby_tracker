@@ -1,5 +1,5 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Picker } from '@react-native-picker/picker';
+import { Picker } from "@react-native-picker/picker";
 import React, { useState } from "react";
 import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 import {
@@ -21,6 +21,7 @@ const FeedingScreen = () => {
   const [selectedTime, setSelectedTime] = useState(new Date());
   const [leftDuration, setLeftDuration] = useState(0);
   const [rightDuration, setRightDuration] = useState(0);
+  const [milkAmount, setMilkAmount] = useState(0);
 
   const headerProps = {
     babyName: "まきちゃん",
@@ -145,48 +146,89 @@ const FeedingScreen = () => {
                   textColor="black"
                 />
               </View>
+              {selectedFeedings.motherMilk && (
+                <>
+                  <View style={styles.LRSection}>
+                    <Text style={styles.leftLabel}>左</Text>
+                    <Text style={styles.rightLabel}>右</Text>
+                  </View>
 
-              <View style={styles.LRSection}>
-                <Text style={styles.leftLabel}>左</Text>
-                <Text style={styles.rightLabel}>右</Text>
-              </View>
-              
-              <View style={styles.durationPickerContainerWrap}>
-                <View style={styles.durationPickerContainer}>
-                  <Picker
-                    selectedValue={leftDuration}
-                    onValueChange={(itemValue) => setLeftDuration(itemValue)}
-                    style={styles.durationPicker}
-                    itemStyle={{ height: 50, fontSize: 16 }}
-                  >
-                    {Array.from({ length: 61 }, (_, i) => (
-                      <Picker.Item 
-                        key={i} 
-                        label={`${i}分`} 
-                        value={i}
-                        color="black"
+                  <View style={styles.durationPickerContainerWrap}>
+                    <View style={styles.durationPickerContainer}>
+                      <Picker
+                        selectedValue={leftDuration}
+                        onValueChange={(itemValue) =>
+                          setLeftDuration(itemValue)
+                        }
+                        style={styles.durationPicker}
+                        itemStyle={{ height: 50, fontSize: 16 }}
+                      >
+                        {Array.from({ length: 61 }, (_, i) => (
+                          <Picker.Item
+                            key={i}
+                            label={`${i}分`}
+                            value={i}
+                            color="black"
+                          />
+                        ))}
+                      </Picker>
+                    </View>
+                    <View style={styles.durationPickerContainer}>
+                      <Picker
+                        selectedValue={rightDuration}
+                        onValueChange={(itemValue) =>
+                          setRightDuration(itemValue)
+                        }
+                        style={styles.durationPicker}
+                        itemStyle={{ height: 50, fontSize: 16 }}
+                      >
+                        {Array.from({ length: 61 }, (_, i) => (
+                          <Picker.Item
+                            key={i}
+                            label={`${i}分`}
+                            value={i}
+                            color="black"
+                          />
+                        ))}
+                      </Picker>
+                    </View>
+                  </View>
+                </>
+              )}
+
+              {selectedFeedings.formulaMilk && (
+                <View style={styles.timePickerSection}>
+                  <View style={styles.recordSectionTitle}>
+                    <View style={styles.milkCanIcon}>
+                      <TablerIcon
+                        xml={milkCanIcon}
+                        width={30}
+                        height={30}
+                        strokeColor="#FFF"
                       />
-                    ))}
-                  </Picker>
+                    </View>
+                    <Text style={styles.timePickerLabel}>ミルク量</Text>
+                  </View>
+
+                  <View style={styles.durationPickerContainer}>
+                    <Picker
+                      selectedValue={milkAmount}
+                      onValueChange={(itemValue) => setMilkAmount(itemValue)}
+                      style={styles.durationPicker}
+                      itemStyle={{ height: 50, fontSize: 16 }}
+                    >
+                      {Array.from({ length: 101 }, (_, i) => (
+                        <Picker.Item
+                          key={i * 5}
+                          label={`${i * 5}ml`}
+                          value={i * 5}
+                          color="black"
+                        />
+                      ))}
+                    </Picker>
+                  </View>
                 </View>
-                <View style={styles.durationPickerContainer}>
-                  <Picker
-                    selectedValue={rightDuration}
-                    onValueChange={(itemValue) => setRightDuration(itemValue)}
-                    style={styles.durationPicker}
-                    itemStyle={{ height: 50, fontSize: 16 }}
-                  >
-                    {Array.from({ length: 61 }, (_, i) => (
-                      <Picker.Item 
-                        key={i} 
-                        label={`${i}分`} 
-                        value={i}
-                        color="black"
-                      />
-                    ))}
-                  </Picker>
-                </View>
-              </View>
+              )}
 
               <View style={styles.buttonContainer}>
                 <Pressable
