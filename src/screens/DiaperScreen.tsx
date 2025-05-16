@@ -153,23 +153,25 @@ const DiaperScreen = () => {
               </View>
 
               <View style={styles.memoSection}>
-                <View style={styles.memoIcon}>                <TablerIcon
-                  xml={memoIcon}
-                  width={30}
-                  height={30}
-                  strokeColor="#FFF"
-                  fillColor="none"
-                /></View>
+                <View style={styles.memoIcon}>
+                  <TablerIcon
+                    xml={memoIcon}
+                    width={30}
+                    height={30}
+                    strokeColor="#FFF"
+                    fillColor="none"
+                  />
+                </View>
                 <Text style={styles.memoLabel}>メモ</Text>
               </View>
               <TextInput
-                  style={styles.memoInput}
-                  placeholder="メモを入力してください"
-                  value={memo}
-                  onChangeText={setMemo}
-                  multiline={true}
-                  numberOfLines={4}
-                />
+                style={styles.memoInput}
+                placeholder="メモを入力してください"
+                value={memo}
+                onChangeText={setMemo}
+                multiline={true}
+                numberOfLines={4}
+              />
 
               <View style={styles.buttonContainer}>
                 <Pressable

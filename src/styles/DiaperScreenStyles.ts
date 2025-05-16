@@ -180,6 +180,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "gray",
+    marginRight: 5,
   },
   memoLabel: {
     fontSize: 14,
