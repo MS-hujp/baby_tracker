@@ -45,8 +45,8 @@ const FeedingScreen = () => {
     }
   };
 
-  const [selectedValue, setSelectedValue] = useState("TypeScript");
-
+  const [selectedValue, setSelectedValue] =  useState("TypeScript");
+  
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -197,7 +197,7 @@ const FeedingScreen = () => {
               )}
 
               {selectedFeedings.formulaMilk && (
-                <View style={styles.timePickerSection}>
+                <View style={styles.milkAmountPickerSection}>
                   <View style={styles.recordSectionTitle}>
                     <View style={styles.milkCanIcon}>
                       <TablerIcon
@@ -210,11 +210,11 @@ const FeedingScreen = () => {
                     <Text style={styles.timePickerLabel}>ミルク量</Text>
                   </View>
 
-                  <View style={styles.durationPickerContainer}>
+                  <View style={styles.milkAmountPickerContainer}>
                     <Picker
                       selectedValue={milkAmount}
                       onValueChange={(itemValue) => setMilkAmount(itemValue)}
-                      style={styles.durationPicker}
+                      style={styles.milkAmountPicker}
                       itemStyle={{ height: 50, fontSize: 16 }}
                     >
                       {Array.from({ length: 101 }, (_, i) => (
