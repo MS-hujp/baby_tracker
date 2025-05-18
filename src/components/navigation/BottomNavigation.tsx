@@ -3,11 +3,11 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { RootStackParamList } from "../../../App";
 import {
-    homeIcon,
-    logoutIcon,
-    settingsIcon,
-    statisticsIcon,
-    timelineIcon,
+  homeIcon,
+  logoutIcon,
+  settingsIcon,
+  statisticsIcon,
+  timelineIcon,
 } from "../../assets/icons/icons";
 import TablerIcon from "../TablerIcon";
 
@@ -74,7 +74,10 @@ const BottomNavigation = () => {
         </View>
         <Text>タイムライン</Text>
       </View>
-      <View style={styles.bottomNavwrap}>
+      <TouchableOpacity 
+        style={styles.bottomNavwrap}
+        onPress={() => navigation.navigate('Statistics')}
+      >
         <View style={[styles.bottomNav, { backgroundColor: "#ac73e6" }]}>
           <TablerIcon
             xml={statisticsIcon}
@@ -85,7 +88,7 @@ const BottomNavigation = () => {
           />
         </View>
         <Text>統計</Text>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };

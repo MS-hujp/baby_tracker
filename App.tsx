@@ -6,6 +6,7 @@ import FeedingScreen from './src/screens/FeedingScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import MeasurementScreen from './src/screens/MeasurementScreen';
 import SleepScreen from './src/screens/SleepScreen';
+import StatisticsScreen from './src/screens/StatisticsScreen';
 import WakeupScreen from './src/screens/WakeupScreen';
 
 export type RootStackParamList = {
@@ -15,6 +16,7 @@ export type RootStackParamList = {
   Sleep: undefined;
   Wakeup: undefined;
   Measurement: undefined;
+  Statistics: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -34,6 +36,7 @@ const App = () => {
         <Stack.Screen name="Sleep" component={SleepScreen} />
         <Stack.Screen name="Wakeup" component={WakeupScreen} />
         <Stack.Screen name="Measurement" component={MeasurementScreen} />
+        <Stack.Screen name="Statistics" component={StatisticsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
