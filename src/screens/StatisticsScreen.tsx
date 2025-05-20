@@ -7,10 +7,11 @@ import {
   View,
 } from "react-native";
 import { WebView } from "react-native-webview";
+import { aiIcon } from "../assets/icons/icons";
 import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
+import TablerIcon from "../components/TablerIcon";
 import { styles } from "../styles/StatisticsScreenStyles";
-
 type TabType = "feeding" | "sleep" | "diaper" | "measurement";
 
 const StatisticsScreen: React.FC = () => {
@@ -129,7 +130,7 @@ const StatisticsScreen: React.FC = () => {
               const data = JSON.parse(event.nativeEvent.data);
               console.log('WebView message:', data);
             } catch (error) {
-              console.log('Raw WebView message:', event.nativeEvent.data);
+              console.log('Raw WebView message:', event.nativeEvent.data, 'error:', error);
             }
           }}
         />
@@ -145,7 +146,8 @@ const StatisticsScreen: React.FC = () => {
           data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
         },
         yAxis: {
-          type: 'value'
+          type: 'value',
+          name: 'ml',
         },
         series: [{
           data: [120, 200, 150, 80, 70],
@@ -367,6 +369,16 @@ const StatisticsScreen: React.FC = () => {
             >
               {renderTabContent()}
             </View>
+          </View>
+
+          <View style={styles.aiContainer}>
+            <View style={styles.aiIconContainer}>
+              <View style={styles.aiIcon}>
+                <TablerIcon xml={aiIcon} width={30} height={30} strokeColor="#FFF" fillColor="none" />
+              </View>
+              <Text style={styles.aiIconText}>AI分析コメント</Text>
+            </View>
+            <Text style={styles.aiCommentText}>授乳タイミングはおよそ30分以内のずれで毎日飲めているようです。この調子だと３週間後には10分以内のずれで授乳すれば赤ちゃんも快適です。あともう少し、がんばりましょう。</Text>
           </View>
         </View>
       </ScrollView>
