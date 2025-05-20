@@ -14,6 +14,7 @@ import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 import TablerIcon from "../components/TablerIcon";
 import { useAuth } from '../contexts/AuthContext';
+import { useBaby } from '../contexts/BabyContext';
 import { useTimeline } from '../contexts/TimelineContext';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import styles from "../styles/DiaperScreenStyles";
@@ -24,11 +25,12 @@ const DiaperScreen = () => {
   const navigation = useNavigation<DiaperScreenNavigationProp>();
   const { currentUser } = useAuth();
   const { addRecord } = useTimeline();
+  const { babyInfo } = useBaby();
   const [selectedTypes, setSelectedTypes] = useState({
     pee: false,
     poo: false,
   });
-  const [selectedTime, setSelectedTime] = useState(new Date());
+  const [selectedTime, setSelectedTime] = useState<Date>(new Date());
   const [memo, setMemo] = useState("");
 
   const headerProps = {
@@ -82,7 +84,7 @@ const DiaperScreen = () => {
         alwaysBounceVertical={true}
       >
         <View style={styles.innerContainer}>
-          <Header {...headerProps} />
+          <Header {...babyInfo} />
           <View style={styles.recordSectionContainer}>
             <View style={styles.recordSectionTitle}>
               <View style={styles.diaperIcon}>

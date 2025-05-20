@@ -336,7 +336,7 @@ const StatisticsScreen: React.FC = () => {
         alwaysBounceVertical={true}
       >
         <View style={styles.innerContainer}>
-          <Header {...headerProps} />
+          <Header name={""} {...headerProps} />
           <View style={styles.content}>
             <View style={styles.tabContainer}>
               {tabs.map((tab) => (

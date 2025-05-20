@@ -4,17 +4,11 @@ import { settingsIcon } from "../assets/icons/icons";
 import TablerIcon from "../components/TablerIcon";
 import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
+import { useBaby } from "../contexts/BabyContext";
 import styles from "../styles/SettingsScreenStyles";
 
 const SettingsScreen: React.FC = () => {
-  const headerProps = {
-    babyName: "まきちゃん",
-    ageInDays: 30,
-    participants: [
-      { name: "ゆか", color: "#FFF" },
-      { name: "けん", color: "blue" },
-    ],
-  };
+  const { babyInfo } = useBaby();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -26,7 +20,7 @@ const SettingsScreen: React.FC = () => {
         alwaysBounceVertical={true}
       >
         <View style={styles.innerContainer}>
-          <Header {...headerProps} />
+          <Header {...babyInfo} />
           <View style={styles.content}>
             <View style={styles.titleContainer}>
               <View style={styles.titleIcon}>

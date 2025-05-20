@@ -15,6 +15,7 @@ import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 import TablerIcon from "../components/TablerIcon";
 import { useAuth } from '../contexts/AuthContext';
+import { useBaby } from '../contexts/BabyContext';
 import { useTimeline } from '../contexts/TimelineContext';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import styles from "../styles/WakeupScreenStyles";
@@ -25,17 +26,9 @@ const WakeupScreen = () => {
   const navigation = useNavigation<WakeupScreenNavigationProp>();
   const { currentUser } = useAuth();
   const { addRecord } = useTimeline();
-  const [selectedTime, setSelectedTime] = useState(new Date());
+  const { babyInfo } = useBaby();
+  const [selectedTime, setSelectedTime] = useState<Date>(new Date());
   const [memo, setMemo] = useState("");
-
-  const headerProps = {
-    babyName: "まきちゃん",
-    ageInDays: 30,
-    participants: [
-      { name: "ゆか", color: "#FFF" },
-      { name: "けん", color: "blue" },
-    ],
-  };
 
   const handleTimeChange = (event: any, selectedDate?: Date) => {
     if (selectedDate) {
@@ -78,7 +71,7 @@ const WakeupScreen = () => {
         alwaysBounceVertical={true}
       >
         <View style={styles.innerContainer}>
-          <Header {...headerProps} />
+          <Header {...babyInfo} />
           <View style={styles.recordSectionContainer}>
             <View style={styles.recordSectionTitle}>
               <View style={styles.wakeupIcon}>

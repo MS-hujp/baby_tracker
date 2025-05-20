@@ -22,6 +22,7 @@ import {
 import TablerIcon from "../components/TablerIcon";
 import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
+import { useBaby } from "../contexts/BabyContext";
 import styles from "../styles/HomeScreenStyles";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
@@ -34,14 +35,7 @@ interface HomeScreenProps {
 }
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
-  const headerProps = {
-    babyName: "まきちゃん",
-    ageInDays: 30,
-    participants: [
-      { name: "ゆか", color: "#FFF" },
-      { name: "けん", color: "blue" },
-    ],
-  };
+  const { babyInfo } = useBaby();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -53,7 +47,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         alwaysBounceVertical={true}
       >
         <View style={styles.innerContainer}>
-          <Header {...headerProps} />
+          <Header {...babyInfo} />
 
           <View style={styles.infoBox}>
             <Text style={styles.infoText}>次の授乳は11:02頃</Text>

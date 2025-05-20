@@ -21,6 +21,7 @@ import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 import TablerIcon from "../components/TablerIcon";
 import { useAuth } from '../contexts/AuthContext';
+import { useBaby } from '../contexts/BabyContext';
 import { useTimeline } from '../contexts/TimelineContext';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import styles from "../styles/MeasurementScreenStyles";
@@ -31,20 +32,12 @@ const MeasurementScreen = () => {
   const navigation = useNavigation<MeasurementScreenNavigationProp>();
   const { currentUser } = useAuth();
   const { addRecord } = useTimeline();
-  const [selectedTime, setSelectedTime] = useState(new Date());
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
-  const [temperature, setTemperature] = useState("");
-  const [memo, setMemo] = useState("");
-
-  const headerProps = {
-    babyName: "まきちゃん",
-    ageInDays: 30,
-    participants: [
-      { name: "ゆか", color: "#FFF" },
-      { name: "けん", color: "blue" },
-    ],
-  };
+  const { babyInfo } = useBaby();
+  const [selectedTime, setSelectedTime] = useState<Date>(new Date());
+  const [height, setHeight] = useState<string>("");
+  const [weight, setWeight] = useState<string>("");
+  const [temperature, setTemperature] = useState<string>("");
+  const [memo, setMemo] = useState<string>("");
 
   const handleTimeChange = (event: any, selectedDate?: Date) => {
     if (selectedDate) {
@@ -92,7 +85,7 @@ const MeasurementScreen = () => {
         alwaysBounceVertical={true}
       >
         <View style={styles.innerContainer}>
-          <Header {...headerProps} />
+          <Header {...babyInfo} />
           <View style={styles.recordSectionContainer}>
             <View style={styles.recordSectionTitle}>
               <View style={styles.measurementIcon}>

@@ -14,6 +14,7 @@ import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 import TablerIcon from "../components/TablerIcon";
 import { useAuth } from '../contexts/AuthContext';
+import { useBaby } from '../contexts/BabyContext';
 import { useTimeline } from '../contexts/TimelineContext';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import styles from "../styles/FeedingScreenStyles";
@@ -24,6 +25,7 @@ const FeedingScreen = () => {
   const navigation = useNavigation<FeedingScreenNavigationProp>();
   const { currentUser } = useAuth();
   const { addRecord } = useTimeline();
+  const { babyInfo } = useBaby();
   const [selectedFeedings, setSelectedFeedings] = useState({
     motherMilk: false,
     formulaMilk: false,
@@ -32,15 +34,6 @@ const FeedingScreen = () => {
   const [leftDuration, setLeftDuration] = useState(0);
   const [rightDuration, setRightDuration] = useState(0);
   const [milkAmount, setMilkAmount] = useState(0);
-
-  const headerProps = {
-    babyName: "まきちゃん",
-    ageInDays: 30,
-    participants: [
-      { name: "ゆか", color: "#FFF" },
-      { name: "けん", color: "blue" },
-    ],
-  };
 
   const toggleFeeding = (type: "motherMilk" | "formulaMilk") => {
     setSelectedFeedings((prev) => ({
@@ -101,7 +94,7 @@ const FeedingScreen = () => {
         alwaysBounceVertical={true}
       >
         <View style={styles.innerContainer}>
-          <Header {...headerProps} />
+          <Header {...babyInfo} />
           <View style={styles.recordSectionContainer}>
             <View style={styles.recordSectionTitle}>
               <View style={styles.mealIcon}>
