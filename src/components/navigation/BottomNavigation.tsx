@@ -1,7 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { RootStackParamList } from "../../../App";
 import {
   homeIcon,
   logoutIcon,
@@ -9,16 +8,27 @@ import {
   statisticsIcon,
   timelineIcon,
 } from "../../assets/icons/icons";
+import { useAuth } from "../../contexts/AuthContext";
+import { RootStackParamList } from "../../navigation/AppNavigator";
 import TablerIcon from "../TablerIcon";
 
 type BottomNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const BottomNavigation = () => {
   const navigation = useNavigation<BottomNavigationProp>();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigation.navigate("Login");
+  };
 
   return (
     <View style={styles.navigation}>
-      <View style={styles.bottomNavwrap}>
+      <TouchableOpacity
+        style={styles.bottomNavwrap}
+        onPress={handleLogout}
+      >
         <View style={[styles.bottomNav, { backgroundColor: "#e6ac73" }]}>
           <TablerIcon
             xml={logoutIcon}
@@ -29,8 +39,9 @@ const BottomNavigation = () => {
           />
         </View>
         <Text>ログアウト</Text>
-      </View>
-      <TouchableOpacity 
+      </TouchableOpacity>
+
+      <TouchableOpacity
         style={styles.bottomNavwrap}
         onPress={() => navigation.navigate('Home')}
       >
@@ -45,7 +56,11 @@ const BottomNavigation = () => {
         </View>
         <Text>ホーム</Text>
       </TouchableOpacity>
-      <View style={styles.bottomNavwrap}>
+
+      <TouchableOpacity
+        style={styles.bottomNavwrap}
+        onPress={() => navigation.navigate('Settings')}
+      >
         <View style={[styles.bottomNav, { backgroundColor: "#999999", marginLeft: 5 }]}>
           <TablerIcon
             xml={settingsIcon}
@@ -56,8 +71,9 @@ const BottomNavigation = () => {
           />
         </View>
         <Text>設定</Text>
-      </View>
-      <TouchableOpacity 
+      </TouchableOpacity>
+
+      <TouchableOpacity
         style={styles.bottomNavwrap}
         onPress={() => navigation.navigate('Timeline')}
       >
@@ -77,7 +93,8 @@ const BottomNavigation = () => {
         </View>
         <Text>タイムライン</Text>
       </TouchableOpacity>
-      <TouchableOpacity 
+
+      <TouchableOpacity
         style={styles.bottomNavwrap}
         onPress={() => navigation.navigate('Statistics')}
       >

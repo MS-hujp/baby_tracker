@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     height: "auto",
   },
-  sleepInnerContainer: {
+  recordSectionContainer: {
     backgroundColor: "#fff",
     marginBottom: 20,
     paddingVertical: 10,
@@ -23,10 +23,7 @@ const styles = StyleSheet.create({
     height: "auto",
     borderRadius: 20,
   },
-  sleepContainer: {
-    flex: 1,
-  },
-  recordItem: {
+  recordSectionTitle: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -34,7 +31,13 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     gap: 5,
   },
-  recordItemIcon: {
+  recordSectionTitleText: {
+    color: "#454444",
+    fontSize: 14,
+    fontWeight: "bold",
+    marginLeft: 10,
+  },
+  sleepIcon: {
     width: 40,
     height: 40,
     borderRadius: 10,
@@ -43,10 +46,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "rgba(137, 196, 255, 1.0)",
   },
-  recordTitle: {
-    color: "#45444",
+  timePickerSection: {
+    marginVertical: 20,
+  },
+  clockIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#b8e68a",
+  },
+  timePickerLabel: {
     fontSize: 14,
     fontWeight: "bold",
+    marginBottom: 5,
     marginLeft: 10,
   },
   timePickerContainer: {

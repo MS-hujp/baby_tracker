@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffe5e5",
@@ -43,14 +43,18 @@ export const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(137, 196, 255, 1.0)",
+    backgroundColor: "#999999",
   },
-  timelineContainer: {
-    marginTop: 10,
-  },
-  emptyText: {
-    textAlign: "center",
-    color: "#999999",
+  settingsContainer: {
     marginTop: 20,
+    paddingVertical: 20,
+    alignItems: "center",
   },
-}); 
+  settingsText: {
+    fontSize: 16,
+    color: "#666666",
+    textAlign: "center",
+  },
+});
+
+export default styles; 

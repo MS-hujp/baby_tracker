@@ -7,7 +7,6 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingHorizontal: 10,
     paddingBottom: 0,
-    height: "auto",
   },
   scrollView: {
     flex: 1,
@@ -16,7 +15,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     height: "auto",
   },
-  diaperInnerContainer: {
+  recordSectionContainer: {
     backgroundColor: "#fff",
     marginBottom: 20,
     paddingVertical: 10,
@@ -24,10 +23,7 @@ const styles = StyleSheet.create({
     height: "auto",
     borderRadius: 20,
   },
-  diaperContainer: {
-    flex: 1,
-  },
-  diaperItem: {
+  recordSectionTitle: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -35,7 +31,13 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     gap: 5,
   },
-  diaperItemIcon: {
+  recordSectionTitleText: {
+    color: "#454444",
+    fontSize: 14,
+    fontWeight: "bold",
+    marginLeft: 10,
+  },
+  diaperIcon: {
     width: 40,
     height: 40,
     borderRadius: 10,
@@ -43,12 +45,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "rgba(137, 196, 255, 1.0)",
-  },
-  recordDiaperTitle: {
-    color: "#45444",
-    fontSize: 14,
-    fontWeight: "bold",
-    marginLeft: 10,
   },
   recordPeeOrPoo: {
     display: "flex",
@@ -58,19 +54,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   peeSection: {
-    display: "flex",
-    flexDirection: "row",
-    backgroundColor: "#E69ED8",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    marginBottom: 5,
-    gap: 5,
-    borderRadius: 10,
-    width: "40%",
-    paddingVertical: 5,
-    paddingHorizontal: 3,
-  },
-  pooSection: {
     display: "flex",
     flexDirection: "row",
     backgroundColor: "#8DD2F2",
@@ -111,6 +94,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  peeIconText: {
+    color: "#FFF",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  pooSection: {
+    display: "flex",
+    flexDirection: "row",
+    backgroundColor: "#E69ED8",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    marginBottom: 5,
+    gap: 5,
+    borderRadius: 10,
+    width: "40%",
+    paddingVertical: 5,
+    paddingHorizontal: 3,
+  },
   pooIcon: {
     width: 40,
     height: 40,
@@ -119,15 +120,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  peeIconText: {
-    color: "#FFF",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
   pooIconText: {
     color: "#FFF",
     fontSize: 14,
     fontWeight: "bold",
+  },
+  timePickerSection: {
+    marginVertical: 20,
+  },
+  clockIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#b8e68a",
+  },
+  timePickerLabel: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginBottom: 5,
+    marginLeft: 10,
   },
   timePickerContainer: {
     backgroundColor: "#f5f5f5",
@@ -163,39 +177,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  memoSection: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    gap: 5,
-    marginVertical: 20,
-  },
-  memoIcon: {
-    width: 35,
-    height: 35,
-    borderRadius: 10,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "gray",
-    marginRight: 5,
-  },
-  memoLabel: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#45444",
-  },
-  memoInput: {
-    borderWidth: 2,
-    borderColor: "#45444433",
-    borderRadius: 8,
-    padding: 12,
-    height: 100,
-    textAlignVertical: "top",
-    fontSize: 14,
-    color: "#333333",
   },
 });
 

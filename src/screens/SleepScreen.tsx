@@ -1,4 +1,6 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from "react";
 import {
     Pressable,
@@ -8,13 +10,21 @@ import {
     TextInput,
     View,
 } from "react-native";
-import { memoIcon, sleepIcon } from "../assets/icons/icons";
+import { clockIcon, memoIcon, sleepIcon } from "../assets/icons/icons";
 import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 import TablerIcon from "../components/TablerIcon";
+import { useAuth } from '../contexts/AuthContext';
+import { useTimeline } from '../contexts/TimelineContext';
+import { RootStackParamList } from '../navigation/AppNavigator';
 import styles from "../styles/SleepScreenStyles";
 
+type SleepScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Sleep'>;
+
 const SleepScreen = () => {
+  const navigation = useNavigation<SleepScreenNavigationProp>();
+  const { currentUser } = useAuth();
+  const { addRecord } = useTimeline();
   const [selectedTime, setSelectedTime] = useState(new Date());
   const [memo, setMemo] = useState("");
 
@@ -23,8 +33,8 @@ const SleepScreen = () => {
     ageInDays: 30,
     participants: [
       { name: "ゆか", color: "#FFF" },
-      { name: "けん", color: "blue" }
-    ]
+      { name: "けん", color: "blue" },
+    ],
   };
 
   const handleTimeChange = (event: any, selectedDate?: Date) => {
@@ -33,20 +43,29 @@ const SleepScreen = () => {
     }
   };
 
-  const handleSubmit = () => {
-    // ここでデータを保存する処理を実装
-    const data = {
-      time: selectedTime,
-      memo: memo,
-    };
-    console.log("Submitted data:", data);
-    // TODO: データを保存する処理を追加
+  const handleRecord = () => {
+    if (!currentUser) return;
+
+    addRecord({
+      type: 'sleep',
+      timestamp: selectedTime,
+      user: currentUser,
+      details: {
+        sleep: {
+          startTime: selectedTime,
+        },
+      },
+    });
+
+    navigation.navigate('Home');
   };
 
   const handleCancel = () => {
     // 入力をリセット
     setSelectedTime(new Date());
     setMemo("");
+    // ホーム画面に戻る
+    navigation.navigate('Home');
   };
 
   return (
@@ -60,20 +79,31 @@ const SleepScreen = () => {
       >
         <View style={styles.innerContainer}>
           <Header {...headerProps} />
-          <View style={styles.sleepInnerContainer}>
-            <View style={styles.sleepContainer}>
-              <View style={styles.recordItem}>
-                <View style={styles.recordItemIcon}>
+          <View style={styles.recordSectionContainer}>
+            <View style={styles.recordSectionTitle}>
+              <View style={styles.sleepIcon}>
+                <TablerIcon
+                  xml={sleepIcon}
+                  width={30}
+                  height={30}
+                  strokeColor="#FFF"
+                  fillColor="none"
+                />
+              </View>
+              <Text style={styles.recordSectionTitleText}>記録</Text>
+            </View>
+
+            <View style={styles.timePickerSection}>
+              <View style={styles.recordSectionTitle}>
+                <View style={styles.clockIcon}>
                   <TablerIcon
-                    xml={sleepIcon}
+                    xml={clockIcon}
                     width={30}
                     height={30}
                     strokeColor="#FFF"
-                    fillColor="none"
-                    strokeWidth={1.5}
                   />
                 </View>
-                <Text style={styles.recordTitle}>記録</Text>
+                <Text style={styles.timePickerLabel}>時間</Text>
               </View>
 
               <View style={styles.timePickerContainer}>
@@ -118,7 +148,7 @@ const SleepScreen = () => {
                 </Pressable>
                 <Pressable
                   style={[styles.button, styles.okButton]}
-                  onPress={handleSubmit}
+                  onPress={handleRecord}
                 >
                   <Text style={styles.buttonText}>OK</Text>
                 </Pressable>

@@ -1,5 +1,7 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from "react";
 import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 import {
@@ -11,9 +13,17 @@ import {
 import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 import TablerIcon from "../components/TablerIcon";
+import { useAuth } from '../contexts/AuthContext';
+import { useTimeline } from '../contexts/TimelineContext';
+import { RootStackParamList } from '../navigation/AppNavigator';
 import styles from "../styles/FeedingScreenStyles";
 
+type FeedingScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Feeding'>;
+
 const FeedingScreen = () => {
+  const navigation = useNavigation<FeedingScreenNavigationProp>();
+  const { currentUser } = useAuth();
+  const { addRecord } = useTimeline();
   const [selectedFeedings, setSelectedFeedings] = useState({
     motherMilk: false,
     formulaMilk: false,
@@ -45,7 +55,41 @@ const FeedingScreen = () => {
     }
   };
 
-  const [selectedValue, setSelectedValue] =  useState("TypeScript");
+  const handleRecord = () => {
+    if (!currentUser) return;
+
+    // 母乳の場合
+    if (selectedFeedings.motherMilk) {
+      addRecord({
+        type: 'feeding',
+        timestamp: selectedTime,
+        user: currentUser,
+        details: {
+          feeding: {
+            type: 'breast',
+          },
+        },
+      });
+    }
+
+    // ミルクの場合
+    if (selectedFeedings.formulaMilk) {
+      addRecord({
+        type: 'feeding',
+        timestamp: selectedTime,
+        user: currentUser,
+        details: {
+          feeding: {
+            type: 'formula',
+            amount: milkAmount,
+          },
+        },
+      });
+    }
+
+    // 記録後、ホーム画面に戻る
+    navigation.navigate('Home');
+  };
   
   return (
     <SafeAreaView style={styles.container}>
@@ -233,17 +277,13 @@ const FeedingScreen = () => {
               <View style={styles.buttonContainer}>
                 <Pressable
                   style={[styles.button, styles.cancelButton]}
-                  onPress={() => {
-                    // キャンセル処理をここに追加
-                  }}
+                  onPress={() => navigation.navigate('Home')}
                 >
                   <Text style={styles.buttonText}>キャンセル</Text>
                 </Pressable>
                 <Pressable
                   style={[styles.button, styles.okButton]}
-                  onPress={() => {
-                    // OK処理をここに追加
-                  }}
+                  onPress={handleRecord}
                 >
                   <Text style={styles.buttonText}>OK</Text>
                 </Pressable>

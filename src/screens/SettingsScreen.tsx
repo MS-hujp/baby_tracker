@@ -1,15 +1,12 @@
 import React from "react";
 import { SafeAreaView, ScrollView, Text, View } from "react-native";
-import { timelineIcon } from "../assets/icons/icons";
+import { settingsIcon } from "../assets/icons/icons";
 import TablerIcon from "../components/TablerIcon";
 import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
-import TimelineItem from "../components/timeline/TimelineItem";
-import { useTimeline } from "../contexts/TimelineContext";
-import { styles } from "../styles/TimelineScreenStyles";
+import styles from "../styles/SettingsScreenStyles";
 
-const TimelineScreen: React.FC = () => {
-  const { records } = useTimeline();
+const SettingsScreen: React.FC = () => {
   const headerProps = {
     babyName: "まきちゃん",
     ageInDays: 30,
@@ -33,19 +30,13 @@ const TimelineScreen: React.FC = () => {
           <View style={styles.content}>
             <View style={styles.titleContainer}>
               <View style={styles.titleIcon}>
-                <TablerIcon xml={timelineIcon} width={30} height={30} strokeColor="#FFF" fillColor="none" />
+                <TablerIcon xml={settingsIcon} width={30} height={30} strokeColor="#FFF" fillColor="none" />
               </View>
-              <Text style={styles.titleText}>タイムライン</Text>
+              <Text style={styles.titleText}>設定</Text>
             </View>
             
-            <View style={styles.timelineContainer}>
-              {records.length === 0 ? (
-                <Text style={styles.emptyText}>まだ記録がありません</Text>
-              ) : (
-                records.map((record) => (
-                  <TimelineItem key={record.id} record={record} />
-                ))
-              )}
+            <View style={styles.settingsContainer}>
+              <Text style={styles.settingsText}>設定画面は現在準備中です。</Text>
             </View>
           </View>
         </View>
@@ -55,4 +46,4 @@ const TimelineScreen: React.FC = () => {
   );
 };
 
-export default TimelineScreen; 
+export default SettingsScreen; 

@@ -1,21 +1,30 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from "react";
 import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    Text,
+    View
 } from "react-native";
-import { diaperIcon, memoIcon, peeIcon, pooIcon } from "../assets/icons/icons";
+import { clockIcon, diaperIcon, peeIcon, pooIcon } from "../assets/icons/icons";
 import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 import TablerIcon from "../components/TablerIcon";
+import { useAuth } from '../contexts/AuthContext';
+import { useTimeline } from '../contexts/TimelineContext';
+import { RootStackParamList } from '../navigation/AppNavigator';
 import styles from "../styles/DiaperScreenStyles";
 
+type DiaperScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Diaper'>;
+
 const DiaperScreen = () => {
-  const [selectedDiaper, setSelectedDiaper] = useState({
+  const navigation = useNavigation<DiaperScreenNavigationProp>();
+  const { currentUser } = useAuth();
+  const { addRecord } = useTimeline();
+  const [selectedTypes, setSelectedTypes] = useState({
     pee: false,
     poo: false,
   });
@@ -31,8 +40,8 @@ const DiaperScreen = () => {
     ],
   };
 
-  const toggleDiaper = (type: "pee" | "poo") => {
-    setSelectedDiaper((prev) => ({
+  const toggleType = (type: "pee" | "poo") => {
+    setSelectedTypes((prev) => ({
       ...prev,
       [type]: !prev[type],
     }));
@@ -44,23 +53,23 @@ const DiaperScreen = () => {
     }
   };
 
-  const handleSubmit = () => {
-    // ここでデータを保存する処理を実装
-    const data = {
-      pee: selectedDiaper.pee,
-      poo: selectedDiaper.poo,
-      time: selectedTime,
-      memo: memo,
-    };
-    console.log("Submitted data:", data);
-    // TODO: データを保存する処理を追加
-  };
+  const handleRecord = () => {
+    if (!currentUser) return;
 
-  const handleCancel = () => {
-    // 入力をリセット
-    setSelectedDiaper({ pee: false, poo: false });
-    setSelectedTime(new Date());
-    setMemo("");
+    addRecord({
+      type: 'diaper',
+      timestamp: selectedTime,
+      user: currentUser,
+      details: {
+        diaper: {
+          pee: selectedTypes.pee,
+          poop: selectedTypes.poo,
+        },
+      },
+    });
+
+    // 記録後、ホーム画面に戻る
+    navigation.navigate('Home');
   };
 
   return (
@@ -74,70 +83,81 @@ const DiaperScreen = () => {
       >
         <View style={styles.innerContainer}>
           <Header {...headerProps} />
-          <View style={styles.diaperInnerContainer}>
-            <View style={styles.diaperContainer}>
-              <View style={styles.diaperItem}>
-                <View style={styles.diaperItemIcon}>
+          <View style={styles.recordSectionContainer}>
+            <View style={styles.recordSectionTitle}>
+              <View style={styles.diaperIcon}>
+                <TablerIcon
+                  xml={diaperIcon}
+                  width={30}
+                  height={30}
+                  strokeColor="#FFF"
+                  fillColor="none"
+                />
+              </View>
+              <Text style={styles.recordSectionTitleText}>記録</Text>
+            </View>
+
+            <View style={styles.recordPeeOrPoo}>
+              <Pressable
+                style={[
+                  styles.peeSection,
+                  selectedTypes.pee && styles.selectedSection,
+                ]}
+                onPress={() => toggleType("pee")}
+              >
+                <View style={styles.checkbox}>
+                  {selectedTypes.pee && (
+                    <View style={styles.checkboxInner} />
+                  )}
+                </View>
+                <View style={styles.peeIcon}>
                   <TablerIcon
-                    xml={diaperIcon}
+                    xml={peeIcon}
                     width={30}
                     height={30}
                     strokeColor="#FFF"
                     fillColor="none"
-                    strokeWidth={1.5}
                   />
                 </View>
-                <Text style={styles.recordDiaperTitle}>記録</Text>
-              </View>
+                <Text style={styles.peeIconText}>おしっこ</Text>
+              </Pressable>
 
-              <View style={styles.recordPeeOrPoo}>
-                <Pressable
-                  style={[
-                    styles.peeSection,
-                    selectedDiaper.pee && styles.selectedSection,
-                  ]}
-                  onPress={() => toggleDiaper("pee")}
-                >
-                  <View style={styles.checkbox}>
-                    {selectedDiaper.pee && (
-                      <View style={styles.checkboxInner} />
-                    )}
-                  </View>
-                  <View style={styles.peeIcon}>
-                    <TablerIcon
-                      xml={peeIcon}
-                      width={30}
-                      height={30}
-                      strokeColor="#FFF"
-                      fillColor="none"
-                    />
-                  </View>
-                  <Text style={styles.peeIconText}>おしっこ</Text>
-                </Pressable>
+              <Pressable
+                style={[
+                  styles.pooSection,
+                  selectedTypes.poo && styles.selectedSection,
+                ]}
+                onPress={() => toggleType("poo")}
+              >
+                <View style={styles.checkbox}>
+                  {selectedTypes.poo && (
+                    <View style={styles.checkboxInner} />
+                  )}
+                </View>
+                <View style={styles.pooIcon}>
+                  <TablerIcon
+                    xml={pooIcon}
+                    width={30}
+                    height={30}
+                    strokeColor="#FFF"
+                    fillColor="none"
+                  />
+                </View>
+                <Text style={styles.pooIconText}>うんち</Text>
+              </Pressable>
+            </View>
 
-                <Pressable
-                  style={[
-                    styles.pooSection,
-                    selectedDiaper.poo && styles.selectedSection,
-                  ]}
-                  onPress={() => toggleDiaper("poo")}
-                >
-                  <View style={styles.checkbox}>
-                    {selectedDiaper.poo && (
-                      <View style={styles.checkboxInner} />
-                    )}
-                  </View>
-                  <View style={styles.pooIcon}>
-                    <TablerIcon
-                      xml={pooIcon}
-                      width={30}
-                      height={30}
-                      strokeColor="#FFF"
-                      fillColor="none"
-                    />
-                  </View>
-                  <Text style={styles.pooIconText}>うんち</Text>
-                </Pressable>
+            <View style={styles.timePickerSection}>
+              <View style={styles.recordSectionTitle}>
+                <View style={styles.clockIcon}>
+                  <TablerIcon
+                    xml={clockIcon}
+                    width={30}
+                    height={30}
+                    strokeColor="#FFF"
+                  />
+                </View>
+                <Text style={styles.timePickerLabel}>時間</Text>
               </View>
 
               <View style={styles.timePickerContainer}>
@@ -152,37 +172,16 @@ const DiaperScreen = () => {
                 />
               </View>
 
-              <View style={styles.memoSection}>
-                <View style={styles.memoIcon}>
-                  <TablerIcon
-                    xml={memoIcon}
-                    width={30}
-                    height={30}
-                    strokeColor="#FFF"
-                    fillColor="none"
-                  />
-                </View>
-                <Text style={styles.memoLabel}>メモ</Text>
-              </View>
-              <TextInput
-                style={styles.memoInput}
-                placeholder="メモを入力してください"
-                value={memo}
-                onChangeText={setMemo}
-                multiline={true}
-                numberOfLines={4}
-              />
-
               <View style={styles.buttonContainer}>
                 <Pressable
                   style={[styles.button, styles.cancelButton]}
-                  onPress={handleCancel}
+                  onPress={() => navigation.navigate('Home')}
                 >
                   <Text style={styles.buttonText}>キャンセル</Text>
                 </Pressable>
                 <Pressable
                   style={[styles.button, styles.okButton]}
-                  onPress={handleSubmit}
+                  onPress={handleRecord}
                 >
                   <Text style={styles.buttonText}>OK</Text>
                 </Pressable>
