@@ -57,7 +57,10 @@ const BottomNavigation = () => {
         </View>
         <Text>設定</Text>
       </View>
-      <View style={styles.bottomNavwrap}>
+      <TouchableOpacity 
+        style={styles.bottomNavwrap}
+        onPress={() => navigation.navigate('Timeline')}
+      >
         <View
           style={[
             styles.bottomNav,
@@ -73,7 +76,7 @@ const BottomNavigation = () => {
           />
         </View>
         <Text>タイムライン</Text>
-      </View>
+      </TouchableOpacity>
       <TouchableOpacity 
         style={styles.bottomNavwrap}
         onPress={() => navigation.navigate('Statistics')}
