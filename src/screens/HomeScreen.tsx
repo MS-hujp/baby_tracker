@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { RootStackParamList } from "../../App";
 import {
   addRecordIcon,
   babyBottleIcon,
@@ -24,6 +23,7 @@ import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 import { useBaby } from "../contexts/BabyContext";
 import styles from "../styles/HomeScreenStyles";
+import { RootStackParamList } from "../types/navigation";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
