@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#454444",
+    flex: 1,
   },
   titleIcon: {
     width: 40,
@@ -45,15 +46,76 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#999999",
   },
-  settingsContainer: {
-    marginTop: 20,
-    paddingVertical: 20,
+  editButton: {
+    flexDirection: "row",
     alignItems: "center",
+    gap: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 15,
+    backgroundColor: "#f5f5f5",
   },
-  settingsText: {
+  editButtonText: {
+    fontSize: 12,
+    color: "#666",
+  },
+  settingsContainer: {
+    gap: 15,
+  },
+  settingItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 15,
+    paddingVertical: 10,
+  },
+  settingIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#999999",
+  },
+  settingContent: {
+    flex: 1,
+  },
+  settingLabel: {
+    fontSize: 12,
+    color: "#666",
+    marginBottom: 5,
+  },
+  settingValue: {
     fontSize: 16,
-    color: "#666666",
-    textAlign: "center",
+    color: "#333",
+    fontWeight: "500",
+  },
+  participantsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginTop: 5,
+  },
+  participant: {
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 15,
+  },
+  participantName: {
+    fontSize: 14,
+    color: "#333",
+  },
+  addParticipantButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 15,
+    backgroundColor: "#f5f5f5",
+  },
+  addParticipantText: {
+    fontSize: 14,
+    color: "#666",
   },
 });
 

@@ -1,6 +1,14 @@
 import React from "react";
-import { SafeAreaView, ScrollView, Text, View } from "react-native";
-import { settingsIcon } from "../assets/icons/icons";
+import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import {
+  addRecordIcon,
+  birthdayIcon,
+  heightIcon,
+  settingsIcon,
+  timelineIcon,
+  userPlusIcon,
+  weightIcon,
+} from "../assets/icons/icons";
 import TablerIcon from "../components/TablerIcon";
 import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
@@ -9,6 +17,12 @@ import styles from "../styles/SettingsScreenStyles";
 
 const SettingsScreen: React.FC = () => {
   const { babyInfo } = useBaby();
+
+  const babyDetails = {
+    birthDate: "2025/7/1",
+    currentWeight: "4,026",
+    currentHeight: "63",
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -27,10 +41,68 @@ const SettingsScreen: React.FC = () => {
                 <TablerIcon xml={settingsIcon} width={30} height={30} strokeColor="#FFF" fillColor="none" />
               </View>
               <Text style={styles.titleText}>設定</Text>
+              <Pressable style={styles.editButton}>
+                <TablerIcon xml={addRecordIcon} width={24} height={24} strokeColor="#666" fillColor="none" />
+                <Text style={styles.editButtonText}>編集する</Text>
+              </Pressable>
             </View>
             
             <View style={styles.settingsContainer}>
-              <Text style={styles.settingsText}>設定画面は現在準備中です。</Text>
+              <View style={styles.settingItem}>
+                <View style={styles.settingIcon}>
+                  <TablerIcon xml={birthdayIcon} width={24} height={24} strokeColor="#FFF" fillColor="none" />
+                </View>
+                <View style={styles.settingContent}>
+                  <Text style={styles.settingLabel}>誕生日</Text>
+                  <Text style={styles.settingValue}>{babyDetails.birthDate}</Text>
+                </View>
+              </View>
+
+              <View style={styles.settingItem}>
+                <View style={styles.settingIcon}>
+                  <TablerIcon xml={weightIcon} width={24} height={24} strokeColor="#FFF" fillColor="none" />
+                </View>
+                <View style={styles.settingContent}>
+                  <Text style={styles.settingLabel}>現在の体重</Text>
+                  <Text style={styles.settingValue}>{babyDetails.currentWeight} g</Text>
+                </View>
+              </View>
+
+              <View style={styles.settingItem}>
+                <View style={styles.settingIcon}>
+                  <TablerIcon xml={heightIcon} width={24} height={24} strokeColor="#FFF" fillColor="none" />
+                </View>
+                <View style={styles.settingContent}>
+                  <Text style={styles.settingLabel}>身長</Text>
+                  <Text style={styles.settingValue}>{babyDetails.currentHeight} cm</Text>
+                </View>
+              </View>
+
+              <View style={styles.settingItem}>
+                <View style={styles.settingIcon}>
+                  <TablerIcon xml={timelineIcon} width={24} height={24} strokeColor="#FFF" fillColor="none" />
+                </View>
+                <View style={styles.settingContent}>
+                  <Text style={styles.settingLabel}>育児に参加している人</Text>
+                  <View style={styles.participantsContainer}>
+                    {babyInfo.participants.map((participant, index) => (
+                      <View
+                        key={index}
+                        style={[
+                          styles.participant,
+                          { backgroundColor: participant.color },
+                        ]}
+                      >
+                        <Text style={styles.participantName}>{participant.name}</Text>
+                      </View>
+                    ))}
+                    <Pressable style={styles.addParticipantButton}>
+                      <TablerIcon xml={userPlusIcon} width={20} height={20} strokeColor="#666" fillColor="none" />
+                      <Text style={styles.addParticipantText}>追加する</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
             </View>
           </View>
         </View>
