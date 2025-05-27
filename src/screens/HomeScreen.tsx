@@ -1,3 +1,5 @@
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
 import {
     SafeAreaView,
@@ -23,11 +25,22 @@ import BottomNavigation from "../components/navigation/BottomNavigation";
 import { useBaby } from "../contexts/BabyContext";
 import styles from "../styles/HomeScreenStyles";
 
-interface HomeScreenProps {
-  onNavigate: (screen: string) => void;
-}
+type RootStackParamList = {
+  Home: undefined;
+  Feeding: undefined;
+  Diaper: undefined;
+  Sleep: undefined;
+  Wakeup: undefined;
+  Measurement: undefined;
+  Statistics: undefined;
+  Timeline: undefined;
+  Settings: undefined;
+};
 
-const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+const HomeScreen = () => {
+  const navigation = useNavigation<NavigationProp>();
   const { babyInfo } = useBaby();
 
   return (
@@ -68,7 +81,7 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
                       styles.recordButton,
                       { backgroundColor: "#66cc9e" },
                     ]}
-                    onPress={() => onNavigate("Feeding")}
+                    onPress={() => navigation.navigate("Feeding")}
                   >
                     <TablerIcon
                       xml={babyBottleIcon}
@@ -84,7 +97,7 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
                       styles.recordButton,
                       { backgroundColor: "#E69ED8" },
                     ]}
-                    onPress={() => onNavigate("Diaper")}
+                    onPress={() => navigation.navigate("Diaper")}
                   >
                     <TablerIcon
                       xml={diaperIcon}
@@ -103,7 +116,7 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
                       styles.recordButton,
                       { backgroundColor: "#ad9ce6" },
                     ]}
-                    onPress={() => onNavigate("Sleep")}
+                    onPress={() => navigation.navigate("Sleep")}
                   >
                     <TablerIcon
                       xml={sleepIcon}
@@ -119,7 +132,7 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
                       styles.recordButton,
                       { backgroundColor: "#e6ac73" },
                     ]}
-                    onPress={() => onNavigate("Wakeup")}
+                    onPress={() => navigation.navigate("Wakeup")}
                   >
                     <TablerIcon
                       xml={wakeupIcon}
@@ -134,7 +147,7 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
               </View>
               <TouchableOpacity 
                 style={styles.recordMeasurements}
-                onPress={() => onNavigate("Measurement")}
+                onPress={() => navigation.navigate("Measurement")}
               >
                 <View style={styles.recordMeasurement}>
                   <TablerIcon
@@ -226,7 +239,7 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
           </View>
         </View>
       </ScrollView>
-      <BottomNavigation onNavigate={onNavigate} />
+      <BottomNavigation />
     </SafeAreaView>
   );
 };
