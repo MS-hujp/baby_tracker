@@ -1,5 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import {
   homeIcon,
@@ -9,18 +7,18 @@ import {
   timelineIcon,
 } from "../../assets/icons/icons";
 import { useAuth } from "../../contexts/AuthContext";
-import { RootStackParamList } from "../../navigation/AppNavigator";
 import TablerIcon from "../TablerIcon";
 
-type BottomNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+interface BottomNavigationProps {
+  onNavigate: (screen: string) => void;
+}
 
-const BottomNavigation = () => {
-  const navigation = useNavigation<BottomNavigationProp>();
+const BottomNavigation = ({ onNavigate }: BottomNavigationProps) => {
   const { logout } = useAuth();
 
   const handleLogout = () => {
     logout();
-    navigation.navigate("Login");
+    onNavigate("Login");
   };
 
   return (
@@ -43,7 +41,7 @@ const BottomNavigation = () => {
 
       <TouchableOpacity
         style={styles.bottomNavwrap}
-        onPress={() => navigation.navigate('Home')}
+        onPress={() => onNavigate('Home')}
       >
         <View style={[styles.bottomNav, { backgroundColor: "#66cc9e", marginRight: 5 }]}>
           <TablerIcon
@@ -59,7 +57,7 @@ const BottomNavigation = () => {
 
       <TouchableOpacity
         style={styles.bottomNavwrap}
-        onPress={() => navigation.navigate('Settings')}
+        onPress={() => onNavigate('Settings')}
       >
         <View style={[styles.bottomNav, { backgroundColor: "#999999", marginLeft: 5 }]}>
           <TablerIcon
@@ -75,7 +73,7 @@ const BottomNavigation = () => {
 
       <TouchableOpacity
         style={styles.bottomNavwrap}
-        onPress={() => navigation.navigate('Timeline')}
+        onPress={() => onNavigate('Timeline')}
       >
         <View
           style={[
@@ -96,7 +94,7 @@ const BottomNavigation = () => {
 
       <TouchableOpacity
         style={styles.bottomNavwrap}
-        onPress={() => navigation.navigate('Statistics')}
+        onPress={() => onNavigate('Statistics')}
       >
         <View style={[styles.bottomNav, { backgroundColor: "#ac73e6" }]}>
           <TablerIcon

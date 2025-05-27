@@ -2,53 +2,8 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ユーザーが認証されているかチェック
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-
-    // ドキュメントの所有者かチェック
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
-    }
-
-    // 赤ちゃんの共同養育者かチェック
-    function isCaregiver(babyId) {
-      return isAuthenticated() && 
-        exists(/databases/$(database)/documents/babies/$(babyId)/caregivers/$(request.auth.uid));
-    }
-
-    // ユーザーコレクション
-    match /users/{userId} {
-      allow read: if isAuthenticated();
-      allow write: if isOwner(userId);
-    }
-
-    // 赤ちゃんコレクション
-    match /babies/{babyId} {
-      allow read, write: if isCaregiver(babyId);
-      
-      // 共同養育者サブコレクション
-      match /caregivers/{caregiverId} {
-        allow read: if isCaregiver(babyId);
-        allow write: if isOwner(caregiverId);
-      }
-    }
-
-    // 記録コレクション
-    match /records/{recordId} {
-      allow read: if isCaregiver(resource.data.babyId);
-      allow create: if isCaregiver(request.resource.data.babyId);
-      allow update, delete: if isCaregiver(resource.data.babyId) && 
-        resource.data.createdBy == request.auth.uid;
-    }
-
-    // 測定記録コレクション
-    match /measurements/{measurementId} {
-      allow read: if isCaregiver(resource.data.babyId);
-      allow create: if isCaregiver(request.resource.data.babyId);
-      allow update, delete: if isCaregiver(resource.data.babyId) && 
-        resource.data.createdBy == request.auth.uid;
+    match /{document=**} {
+      allow read, write: if true;
     }
   }
 }

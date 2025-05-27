@@ -53,7 +53,7 @@ export const getFeedings = async (babyId, limit = 10) => {
       .orderBy('timestamp', 'desc')
       .limit(limit)
       .get();
-      
+
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
     console.error('Error getting feedings: ', error);
@@ -126,7 +126,7 @@ export const getTimeline = async (babyId, limit = 20) => {
       getCollection('sleeps', babyId, limit),
       getCollection('measurements', babyId, limit)
     ]);
-    
+
     // 全てのデータを統合してタイムスタンプでソート
     const timeline = [...feedings, ...diapers, ...sleeps, ...measurements]
       .sort((a, b) => {
@@ -135,7 +135,7 @@ export const getTimeline = async (babyId, limit = 20) => {
         return bTime - aTime; // 降順（新しい順）
       })
       .slice(0, limit);
-      
+
     return timeline;
   } catch (error) {
     console.error('Error getting timeline: ', error);
@@ -150,7 +150,7 @@ const getCollection = async (collectionName, babyId, limitCount) => {
     .orderBy('timestamp', 'desc')
     .limit(limitCount)
     .get();
-    
+
   return snapshot.docs.map(doc => ({ 
     id: doc.id, 
     ...doc.data(),

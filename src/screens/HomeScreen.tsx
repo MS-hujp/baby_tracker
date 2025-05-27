@@ -1,40 +1,33 @@
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
 import {
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    SafeAreaView,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import {
-  addRecordIcon,
-  babyBottleIcon,
-  diaperIcon,
-  heightIcon,
-  sleepIcon,
-  thermometerIcon,
-  timelineIcon,
-  wakeupIcon,
-  weightIcon,
+    addRecordIcon,
+    babyBottleIcon,
+    diaperIcon,
+    heightIcon,
+    sleepIcon,
+    thermometerIcon,
+    timelineIcon,
+    wakeupIcon,
+    weightIcon,
 } from "../assets/icons/icons";
 import TablerIcon from "../components/TablerIcon";
 import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 import { useBaby } from "../contexts/BabyContext";
 import styles from "../styles/HomeScreenStyles";
-import { RootStackParamList } from "../types/navigation";
-
-type HomeScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "Home"
->;
 
 interface HomeScreenProps {
-  navigation: HomeScreenNavigationProp;
+  onNavigate: (screen: string) => void;
 }
 
-const HomeScreen = ({ navigation }: HomeScreenProps) => {
+const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
   const { babyInfo } = useBaby();
 
   return (
@@ -75,7 +68,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                       styles.recordButton,
                       { backgroundColor: "#66cc9e" },
                     ]}
-                    onPress={() => navigation.navigate("Feeding")}
+                    onPress={() => onNavigate("Feeding")}
                   >
                     <TablerIcon
                       xml={babyBottleIcon}
@@ -91,7 +84,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                       styles.recordButton,
                       { backgroundColor: "#E69ED8" },
                     ]}
-                    onPress={() => navigation.navigate("Diaper")}
+                    onPress={() => onNavigate("Diaper")}
                   >
                     <TablerIcon
                       xml={diaperIcon}
@@ -110,7 +103,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                       styles.recordButton,
                       { backgroundColor: "#ad9ce6" },
                     ]}
-                    onPress={() => navigation.navigate("Sleep")}
+                    onPress={() => onNavigate("Sleep")}
                   >
                     <TablerIcon
                       xml={sleepIcon}
@@ -126,7 +119,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                       styles.recordButton,
                       { backgroundColor: "#e6ac73" },
                     ]}
-                    onPress={() => navigation.navigate("Wakeup")}
+                    onPress={() => onNavigate("Wakeup")}
                   >
                     <TablerIcon
                       xml={wakeupIcon}
@@ -141,7 +134,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
               </View>
               <TouchableOpacity 
                 style={styles.recordMeasurements}
-                onPress={() => navigation.navigate("Measurement")}
+                onPress={() => onNavigate("Measurement")}
               >
                 <View style={styles.recordMeasurement}>
                   <TablerIcon
@@ -206,14 +199,8 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                     />
                   </View>
                   <Text style={styles.timeLineText}>授乳</Text>
-                  <Text style={styles.timestamp}>
-                    {/* {new Date(item.timestamp.seconds * 1000).toLocaleString()} */}
-                    8:01
-                  </Text>
-                  <Text style={styles.logText}>
-                    {/* User ID: {item.user_id} */}
-                    Yukaが記録
-                  </Text>
+                  <Text style={styles.timestamp}>8:01</Text>
+                  <Text style={styles.logText}>Yukaが記録</Text>
                 </View>
                 <View style={styles.timeLineItem}>
                   <View
@@ -231,71 +218,15 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                     />
                   </View>
                   <Text style={styles.timeLineText}>寝る</Text>
-                  <Text style={styles.timestamp}>
-                    {/* {new Date(item.timestamp.seconds * 1000).toLocaleString()} */}
-                    8:01
-                  </Text>
-                  <Text style={styles.logText}>
-                    {/* User ID: {item.user_id} */}
-                    Kenが記録
-                  </Text>
-                </View>
-                <View style={styles.timeLineItem}>
-                  <View
-                    style={[
-                      styles.timeLineItemIcon,
-                      { backgroundColor: "#E69ED8" },
-                    ]}
-                  >
-                    <TablerIcon
-                      xml={diaperIcon}
-                      width={30}
-                      height={30}
-                      strokeColor="#FFF"
-                      fillColor="none"
-                    />
-                  </View>
-                  <Text style={styles.timeLineText}>おむつ交換</Text>
-                  <Text style={styles.timestamp}>
-                    {/* {new Date(item.timestamp.seconds * 1000).toLocaleString()} */}
-                    8:01
-                  </Text>
-                  <Text style={styles.logText}>
-                    {/* User ID: {item.user_id} */}
-                    Kenが記録
-                  </Text>
-                </View>
-                <View style={styles.timeLineItem}>
-                  <View
-                    style={[
-                      styles.timeLineItemIcon,
-                      { backgroundColor: "#e6ac73" },
-                    ]}
-                  >
-                    <TablerIcon
-                      xml={wakeupIcon}
-                      width={30}
-                      height={30}
-                      strokeColor="#FFF"
-                      fillColor="none"
-                    />
-                  </View>
-                  <Text style={styles.timeLineText}>起きる</Text>
-                  <Text style={styles.timestamp}>
-                    {/* {new Date(item.timestamp.seconds * 1000).toLocaleString()} */}
-                    8:01
-                  </Text>
-                  <Text style={styles.logText}>
-                    {/* User ID: {item.user_id} */}
-                    Yukaが記録
-                  </Text>
+                  <Text style={styles.timestamp}>8:01</Text>
+                  <Text style={styles.logText}>Kenが記録</Text>
                 </View>
               </View>
             </View>
           </View>
         </View>
       </ScrollView>
-      <BottomNavigation />
+      <BottomNavigation onNavigate={onNavigate} />
     </SafeAreaView>
   );
 };
