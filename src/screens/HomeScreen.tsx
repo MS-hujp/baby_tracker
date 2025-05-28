@@ -2,22 +2,22 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
 import {
-    SafeAreaView,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import {
-    addRecordIcon,
-    babyBottleIcon,
-    diaperIcon,
-    heightIcon,
-    sleepIcon,
-    thermometerIcon,
-    timelineIcon,
-    wakeupIcon,
-    weightIcon,
+  addRecordIcon,
+  babyBottleIcon,
+  diaperIcon,
+  heightIcon,
+  sleepIcon,
+  thermometerIcon,
+  timelineIcon,
+  wakeupIcon,
+  weightIcon,
 } from "../assets/icons/icons";
 import TablerIcon from "../components/TablerIcon";
 import Header from "../components/layout/Header";
@@ -26,6 +26,7 @@ import { useBaby } from "../contexts/BabyContext";
 import styles from "../styles/HomeScreenStyles";
 
 type RootStackParamList = {
+  Login: undefined;
   Home: undefined;
   Feeding: undefined;
   Diaper: undefined;
@@ -35,6 +36,7 @@ type RootStackParamList = {
   Statistics: undefined;
   Timeline: undefined;
   Settings: undefined;
+  CreateFamily: undefined;
 };
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;

@@ -1,3 +1,5 @@
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from "react";
 import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 import {
@@ -15,8 +17,16 @@ import BottomNavigation from "../components/navigation/BottomNavigation";
 import { useBaby } from "../contexts/BabyContext";
 import styles from "../styles/SettingsScreenStyles";
 
+type RootStackParamList = {
+  Main: undefined;
+  CreateFamily: undefined;
+};
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
 const SettingsScreen: React.FC = () => {
   const { babyInfo } = useBaby();
+  const navigation = useNavigation<NavigationProp>();
 
   const babyDetails = {
     birthDate: "2025/7/1",
@@ -99,6 +109,24 @@ const SettingsScreen: React.FC = () => {
                     <Pressable style={styles.addParticipantButton}>
                       <TablerIcon xml={userPlusIcon} width={20} height={20} strokeColor="#666" fillColor="none" />
                       <Text style={styles.addParticipantText}>追加する</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+              
+              <View style={styles.settingItem}>
+                <View style={styles.settingIcon}>
+                  <TablerIcon xml={timelineIcon} width={24} height={24} strokeColor="#FFF" fillColor="none" />
+                </View>
+                <View style={styles.settingContent}>
+                  <Text style={styles.settingLabel}>家族を作成・編集する</Text>
+                  <View style={styles.participantsContainer}>
+                    <Pressable 
+                      style={styles.addParticipantButton}
+                      onPress={() => navigation.navigate('CreateFamily')}
+                    >
+                      <TablerIcon xml={userPlusIcon} width={20} height={20} strokeColor="#666" fillColor="none" />
+                      <Text style={styles.addParticipantText}>家族を作成</Text>
                     </Pressable>
                   </View>
                 </View>
