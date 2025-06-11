@@ -79,6 +79,13 @@ const styles = StyleSheet.create({
   settingContent: {
     flex: 1,
   },
+  settingArrow: {
+    width: 24,
+    height: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    opacity: 0.5,
+  },
   settingLabel: {
     fontSize: 12,
     color: "#666",

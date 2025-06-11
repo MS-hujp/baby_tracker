@@ -1,7 +1,7 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useFamily } from '../hooks/useFamily';
+import { useBaby } from '../contexts/BabyContext';
 
 interface FamilyCreationProps {
   onFamilyCreated?: (familyId: string) => void;
@@ -11,15 +11,23 @@ export function FamilyCreation({ onFamilyCreated }: FamilyCreationProps) {
   const [babyName, setBabyName] = useState('');
   const [birthday, setBirthday] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const { createNewFamily, error } = useFamily();
+  const [isCreating, setIsCreating] = useState(false);
+  const { createNewFamily, error, loading } = useBaby();
 
   const handleCreate = async () => {
+    if (!babyName.trim()) {
+      return;
+    }
+
     try {
-      const familyId = await createNewFamily(babyName, birthday);
+      setIsCreating(true);
+      const familyId = await createNewFamily(babyName.trim(), birthday);
       console.log('Created family with ID:', familyId);
       onFamilyCreated?.(familyId);
     } catch (err) {
       console.error('Failed to create family:', err);
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -34,6 +42,7 @@ export function FamilyCreation({ onFamilyCreated }: FamilyCreationProps) {
           value={babyName}
           onChangeText={setBabyName}
           placeholder="赤ちゃんの名前を入力"
+          editable={!isCreating && !loading}
         />
       </View>
 
@@ -42,6 +51,7 @@ export function FamilyCreation({ onFamilyCreated }: FamilyCreationProps) {
         <Button
           title={birthday.toLocaleDateString()}
           onPress={() => setShowDatePicker(true)}
+          disabled={isCreating || loading}
         />
         {showDatePicker && (
           <DateTimePicker
@@ -59,13 +69,13 @@ export function FamilyCreation({ onFamilyCreated }: FamilyCreationProps) {
       </View>
 
       {error && (
-        <Text style={styles.error}>{error.message}</Text>
+        <Text style={styles.error}>{error}</Text>
       )}
 
       <Button
-        title="家族を作成"
+        title={isCreating ? "作成中..." : "家族を作成"}
         onPress={handleCreate}
-        disabled={!babyName}
+        disabled={!babyName.trim() || isCreating || loading}
       />
     </View>
   );
@@ -79,6 +89,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 24,
+    textAlign: 'center',
   },
   inputContainer: {
     marginBottom: 16,
@@ -86,15 +97,18 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 8,
+    fontWeight: '600',
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 4,
-    padding: 8,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
   },
   error: {
     color: 'red',
     marginBottom: 16,
+    textAlign: 'center',
   },
 }); 

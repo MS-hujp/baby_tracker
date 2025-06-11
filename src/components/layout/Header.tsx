@@ -1,10 +1,14 @@
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { Text, View } from "react-native";
-import { BabyInfo } from "../../contexts/BabyContext";
 import styles from "../../styles/HeaderStyles";
+import { Participant } from "../../types/family";
 
-interface HeaderProps extends BabyInfo {}
+interface HeaderProps {
+  name: string;
+  ageInDays: number;
+  participants: Participant[];
+}
 
 const Header: React.FC<HeaderProps> = ({ name, ageInDays, participants }) => {
   return (

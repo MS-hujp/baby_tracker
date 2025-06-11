@@ -1,113 +1,124 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { updateBaby } from '../utils/firestoreUtils';
-
-export type Participant = {
-  name: string;
-  color: string;
-  uid?: string;
-};
-
-export type BabyInfo = {
-  id?: string;
-  name: string;
-  birthdate?: string;
-  weight?: number;
-  height?: number;
-  ageInDays: number;
-  participants: Participant[];
-};
+import { BabyInfo, FamilyWithData, Participant } from '../types/family';
+import { babyOperations, familyOperations } from '../utils/familyFirestore';
 
 type BabyContextType = {
-  babyInfo: BabyInfo;
+  babyInfo: BabyInfo | null;
+  family: FamilyWithData | null;
+  familyId: string | null;
   loading: boolean;
   error: string | null;
   updateBabyInfo: (data: Partial<BabyInfo>) => Promise<void>;
   addParticipant: (participant: Participant) => Promise<void>;
+  createNewFamily: (babyName: string, birthday: Date) => Promise<string>;
+  setFamilyId: (familyId: string) => void;
 };
 
-const defaultBabyInfo: BabyInfo = {
-  name: "まきちゃん",
-  ageInDays: 30,
-  birthdate: "2025/7/1",
-  weight: 4026,
-  height: 63,
-  participants: [
-    { name: "ゆか", color: "#FFF" },
-    { name: "けん", color: "blue" },
-  ],
-};
+// デフォルトの参加者データ（UI互換性のため）
+const defaultParticipants: Participant[] = [
+  { name: "ゆか", color: "#FFF" },
+  { name: "けん", color: "blue" },
+];
 
 const BabyContext = createContext<BabyContextType | undefined>(undefined);
 
 export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [babyInfo, setBabyInfo] = useState<BabyInfo>(defaultBabyInfo);
+  const [family, setFamily] = useState<FamilyWithData | null>(null);
+  const [babyInfo, setBabyInfo] = useState<BabyInfo | null>(null);
+  const [familyId, setFamilyIdState] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 赤ちゃん情報の初期化
+  // 家族IDが設定されたときの初期化
   useEffect(() => {
-    const initializeBaby = async () => {
-      try {
-        setLoading(true);
-        
-        // DBへの接続テスト用。実際のデータ取得はTODOとして後回し
-        console.log('Firebase connection test - initializing baby data');
-        setBabyInfo(defaultBabyInfo);
-        
-        /* 実装予定
-        const babyId = 'default-baby-id';
-        let baby = await getBabyInfo(babyId);
-        
-        if (!baby) {
-          const newBaby = await addBaby(defaultBabyInfo);
-          setBabyInfo({...defaultBabyInfo, id: newBaby.id});
-        } else {
-          const babyData = {...defaultBabyInfo, ...baby};
-          setBabyInfo(babyData);
+    if (!familyId) {
+      setLoading(false);
+      setFamily(null);
+      setBabyInfo(null);
+      return;
+    }
+
+    initializeFamily(familyId);
+  }, [familyId]);
+
+  // 家族データの初期化
+  const initializeFamily = async (currentFamilyId: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log('Initializing family with ID:', currentFamilyId);
+      
+      // 家族データを購読
+      const unsubscribe = familyOperations.subscribeToFamily(
+        currentFamilyId,
+        (familyData, error) => {
+          if (error) {
+            console.error('Error subscribing to family:', error);
+            setError('家族情報の取得に失敗しました');
+            setLoading(false);
+            return;
+          }
+
+          if (familyData) {
+            setFamily(familyData);
+            
+            // 最初の赤ちゃんの情報をBabyInfoに変換
+            if (familyData.babies.length > 0) {
+              const firstBaby = familyData.babies[0];
+              const convertedBabyInfo = babyOperations.convertToBabyInfo(
+                firstBaby,
+                defaultParticipants
+              );
+              setBabyInfo(convertedBabyInfo);
+            } else {
+              setBabyInfo(null);
+            }
+          } else {
+            setFamily(null);
+            setBabyInfo(null);
+          }
+          
+          setLoading(false);
         }
-        */
-      } catch (err) {
-        console.error('Error initializing baby data:', err);
-        setError('赤ちゃん情報の取得に失敗しました');
-      } finally {
-        setLoading(false);
-      }
-    };
+      );
 
-    initializeBaby();
-  }, []);
-
-  // 誕生日から日齢を計算
-  const calculateAgeInDays = (birthdate?: string) => {
-    if (!birthdate) return 0;
-    
-    const birth = new Date(birthdate);
-    const today = new Date();
-    const diffTime = Math.abs(today.getTime() - birth.getTime());
-    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      // クリーンアップ関数を返す
+      return () => {
+        console.log('Unsubscribing from family updates');
+        unsubscribe();
+      };
+    } catch (err) {
+      console.error('Error initializing family:', err);
+      setError('家族情報の初期化に失敗しました');
+      setLoading(false);
+    }
   };
 
   // 赤ちゃん情報の更新
   const updateBabyInfo = async (data: Partial<BabyInfo>) => {
     try {
       setLoading(true);
+      setError(null);
       
-      if (!babyInfo.id) {
-        throw new Error('Baby ID not found');
+      if (!familyId || !babyInfo?.id) {
+        throw new Error('Family ID or Baby ID not found');
       }
+      
+      // BabyInfo から Baby 形式に変換
+      const updateData: any = {};
+      
+      if (data.name !== undefined) updateData.name = data.name;
+      if (data.birthdate !== undefined) {
+        updateData.birthday = new Date(data.birthdate);
+      }
+      if (data.weight !== undefined) updateData.currentWeight = data.weight;
+      if (data.height !== undefined) updateData.currentHeight = data.height;
       
       // Firestoreの赤ちゃん情報を更新
-      await updateBaby(babyInfo.id, data);
+      await babyOperations.updateBaby(familyId, babyInfo.id, updateData);
       
-      // ローカルの状態も更新
-      const updatedInfo = { ...babyInfo, ...data };
-      
-      // 誕生日が変更された場合は日齢も再計算
-      if (data.birthdate) {
-        updatedInfo.ageInDays = calculateAgeInDays(data.birthdate);
-      }
-      
-      setBabyInfo(updatedInfo);
+      console.log('Baby info updated successfully');
     } catch (err) {
       console.error('Error updating baby info:', err);
       setError('赤ちゃん情報の更新に失敗しました');
@@ -116,25 +127,24 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // 参加者の追加
+  // 参加者の追加（UI互換性のため、ローカルステートのみ更新）
   const addParticipant = async (participant: Participant) => {
     try {
       setLoading(true);
       
-      if (!babyInfo.id) {
-        throw new Error('Baby ID not found');
+      if (!babyInfo) {
+        throw new Error('Baby info not found');
       }
       
       const updatedParticipants = [...babyInfo.participants, participant];
       
-      // Firestoreの参加者情報を更新
-      await updateBaby(babyInfo.id, { participants: updatedParticipants });
-      
-      // ローカルの状態も更新
+      // ローカルステートを更新（実際のDBには保存しない）
       setBabyInfo({
         ...babyInfo,
         participants: updatedParticipants
       });
+      
+      console.log('Participant added successfully');
     } catch (err) {
       console.error('Error adding participant:', err);
       setError('参加者の追加に失敗しました');
@@ -143,14 +153,44 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  // 新しい家族の作成
+  const createNewFamily = async (babyName: string, birthday: Date): Promise<string> => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      console.log('Creating new family with baby:', babyName);
+      const newFamilyId = await familyOperations.createFamily(babyName, birthday);
+      
+      // 新しい家族IDを設定（これにより useEffect が実行される）
+      setFamilyIdState(newFamilyId);
+      
+      return newFamilyId;
+    } catch (err) {
+      console.error('Error creating family:', err);
+      setError('家族の作成に失敗しました');
+      throw err;
+    }
+  };
+
+  // 家族IDの設定
+  const setFamilyId = (newFamilyId: string) => {
+    console.log('Setting family ID:', newFamilyId);
+    setFamilyIdState(newFamilyId);
+  };
+
   return (
     <BabyContext.Provider 
       value={{ 
         babyInfo, 
+        family,
+        familyId,
         loading, 
         error, 
         updateBabyInfo, 
-        addParticipant 
+        addParticipant,
+        createNewFamily,
+        setFamilyId
       }}
     >
       {children}

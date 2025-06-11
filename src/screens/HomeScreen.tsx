@@ -2,22 +2,22 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
 import {
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    SafeAreaView,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import {
-  addRecordIcon,
-  babyBottleIcon,
-  diaperIcon,
-  heightIcon,
-  sleepIcon,
-  thermometerIcon,
-  timelineIcon,
-  wakeupIcon,
-  weightIcon,
+    addRecordIcon,
+    babyBottleIcon,
+    diaperIcon,
+    heightIcon,
+    sleepIcon,
+    thermometerIcon,
+    timelineIcon,
+    wakeupIcon,
+    weightIcon,
 } from "../assets/icons/icons";
 import TablerIcon from "../components/TablerIcon";
 import Header from "../components/layout/Header";
@@ -43,7 +43,40 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const HomeScreen = () => {
   const navigation = useNavigation<NavigationProp>();
-  const { babyInfo } = useBaby();
+  const { babyInfo, loading, error } = useBaby();
+
+  // ローディング中
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text>データを読み込み中...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // エラー時
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: 'red' }}>エラー: {error}</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // 赤ちゃん情報がない場合
+  if (!babyInfo) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text>赤ちゃん情報が見つかりません</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -55,7 +88,11 @@ const HomeScreen = () => {
         alwaysBounceVertical={true}
       >
         <View style={styles.innerContainer}>
-          <Header {...babyInfo} />
+          <Header 
+            name={babyInfo.name}
+            ageInDays={babyInfo.ageInDays}
+            participants={babyInfo.participants}
+          />
 
           <View style={styles.infoBox}>
             <Text style={styles.infoText}>次の授乳は11:02頃</Text>
