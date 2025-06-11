@@ -36,10 +36,19 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 15,
   },
+  currentUserParticipant: {
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    borderWidth: 2,
+    borderColor: "#007AFF",
+  },
   participantName: {
     fontSize: 14,
     color: "#333",
     marginLeft: 5,
+  },
+  currentUserName: {
+    fontWeight: "bold",
+    color: "#007AFF",
   },
 });
 

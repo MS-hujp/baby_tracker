@@ -21,11 +21,17 @@ export interface Baby {
   updatedAt: Date;
 }
 
+// 【重要】Firebase Authentication は絶対に使用禁止
+// バグが発生することが判明しているため、未来永劫導入しない
+// 認証なしの家族ベースシステムで家族メンバー管理を行う
 export interface FamilyMember {
   id: string;
+  displayName: string; // 実際の名前（「ゆか」「けん」など）
   role: 'dad' | 'mom' | 'other';
-  email: string;
+  email: string; // 将来の連絡用（現在は空文字でOK）
+  color: string; // UI表示用カラー
   joinedAt: Date;
+  isCurrentUser: boolean; // 現在のユーザーかどうかの識別
 }
 
 // Record Types (individual types maintained)

@@ -8,9 +8,10 @@ interface HeaderProps {
   name: string;
   ageInDays: number;
   participants: Participant[];
+  currentUser?: { displayName: string; color: string; role: string } | null;
 }
 
-const Header: React.FC<HeaderProps> = ({ name, ageInDays, participants }) => {
+const Header: React.FC<HeaderProps> = ({ name, ageInDays, participants, currentUser }) => {
   return (
     <View style={styles.header}>
       <View style={styles.babyInfo}>
@@ -19,15 +20,34 @@ const Header: React.FC<HeaderProps> = ({ name, ageInDays, participants }) => {
         <Text style={styles.age}>(生後{ageInDays}日)</Text>
       </View>
       <View style={styles.participants}>
-        {participants.map((participant, index) => (
-          <View
-            key={index}
-            style={styles.participant}
-          >
-            <MaterialIcons name="child-care" size={24} color={participant.color} />
-            <Text style={styles.participantName}>{participant.name}</Text>
-          </View>
-        ))}
+        {participants.map((participant, index) => {
+          const isCurrentUser = currentUser && participant.name === currentUser.displayName;
+          
+          return (
+            <View
+              key={index}
+              style={[
+                styles.participant,
+                isCurrentUser && styles.currentUserParticipant
+              ]}
+            >
+              <MaterialIcons 
+                name="child-care" 
+                size={24} 
+                color={participant.color} 
+              />
+              <Text 
+                style={[
+                  styles.participantName,
+                  isCurrentUser && styles.currentUserName
+                ]}
+              >
+                {participant.name}
+                {isCurrentUser && ' (現在)'}
+              </Text>
+            </View>
+          );
+        })}
       </View>
     </View>
   );

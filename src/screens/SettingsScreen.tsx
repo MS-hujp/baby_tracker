@@ -28,7 +28,7 @@ type RootStackParamList = {
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const SettingsScreen: React.FC = () => {
-  const { babyInfo, loading, error } = useBaby();
+  const { babyInfo, currentUser, loading, error } = useBaby();
   const navigation = useNavigation<NavigationProp>();
   
   // モーダル状態管理
@@ -83,6 +83,7 @@ const SettingsScreen: React.FC = () => {
             name={babyInfo.name}
             ageInDays={babyInfo.ageInDays}
             participants={babyInfo.participants}
+            currentUser={currentUser}
           />
           <View style={styles.content}>
             <View style={styles.titleContainer}>

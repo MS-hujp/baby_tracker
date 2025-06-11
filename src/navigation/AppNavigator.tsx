@@ -1,6 +1,8 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import AutoLoginScreen from '../screens/AutoLoginScreen';
+import CreateFamilyModal from '../screens/CreateFamilyModal';
 import DiaperScreen from '../screens/DiaperScreen';
 import FeedingScreen from '../screens/FeedingScreen';
 import HomeScreen from '../screens/HomeScreen';
@@ -10,6 +12,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import SleepScreen from '../screens/SleepScreen';
 import StatisticsScreen from '../screens/StatisticsScreen';
 import TimelineScreen from '../screens/TimelineScreen';
+import UserSelectionScreen from '../screens/UserSelectionScreen';
 import WakeupScreen from '../screens/WakeupScreen';
 
 export type RootStackParamList = {
@@ -23,6 +26,9 @@ export type RootStackParamList = {
   Statistics: undefined;
   Timeline: undefined;
   Settings: undefined;
+  CreateFamilyModal: undefined;
+  UserSelectionScreen: undefined;
+  AutoLoginScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -53,6 +59,31 @@ const AppNavigator = () => {
       <Stack.Screen name="Statistics" component={StatisticsScreen} />
       <Stack.Screen name="Timeline" component={TimelineScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen 
+        name="CreateFamilyModal" 
+        component={CreateFamilyModal}
+        options={{
+          presentation: 'modal',
+          headerShown: true,
+          headerTitle: 'Step2: 家族作成テスト'
+        }}
+      />
+      <Stack.Screen 
+        name="UserSelectionScreen" 
+        component={UserSelectionScreen}
+        options={{
+          headerShown: true,
+          headerTitle: 'Step3.2: ユーザー選択永続化テスト'
+        }}
+      />
+      <Stack.Screen 
+        name="AutoLoginScreen" 
+        component={AutoLoginScreen}
+        options={{
+          headerShown: true,
+          headerTitle: 'Step3.3: 自動ログインテスト'
+        }}
+      />
     </Stack.Navigator>
   );
 };

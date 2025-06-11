@@ -1,6 +1,9 @@
-import { collection, doc, getDocs, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { createFamily, db } from '../firebaseConfig';
+import { familyOperations } from '../utils/familyFirestore';
+
+// 【重要】Firebase Authentication は絶対に使用禁止
+// バグが発生することが判明しているため、未来永劫導入しない
+// 認証なしの家族ベースシステムで家族メンバー管理を行う
 
 export interface Baby {
   id: string;
@@ -10,9 +13,12 @@ export interface Baby {
 
 export interface FamilyMember {
   id: string;
+  displayName: string; // 実際の名前
   role: 'dad' | 'mom' | 'other';
   email: string;
+  color: string; // UI表示用カラー
   joinedAt: Date;
+  isCurrentUser: boolean; // 現在のユーザーかどうか
 }
 
 export interface Family {
@@ -34,53 +40,29 @@ export function useFamily(familyId?: string) {
       return;
     }
 
-    const familyRef = doc(db, 'families', familyId);
-    const babiesRef = collection(familyRef, 'babies');
-    const membersRef = collection(familyRef, 'members');
-
-    const unsubscribe = onSnapshot(
-      familyRef,
-      async (familyDoc) => {
-        if (!familyDoc.exists()) {
-          setError(new Error('Family not found'));
+    // familyOperationsを使用して家族データを購読
+    const unsubscribe = familyOperations.subscribeToFamily(
+      familyId,
+      (familyData, subscriptionError) => {
+        if (subscriptionError) {
+          console.error('Family subscription error:', subscriptionError);
+          setError(subscriptionError);
           setLoading(false);
           return;
         }
 
-        try {
-          // Get babies
-          const babiesSnapshot = await getDocs(babiesRef);
-          const babies = babiesSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-            birthday: doc.data().birthday.toDate(),
-          })) as Baby[];
-
-          // Get members
-          const membersSnapshot = await getDocs(membersRef);
-          const members = membersSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-            joinedAt: doc.data().joinedAt.toDate(),
-          })) as FamilyMember[];
-
+        if (familyData) {
+          // FamilyWithData から Family 形式に変換
           setFamily({
-            id: familyDoc.id,
-            ...familyDoc.data(),
-            createdAt: familyDoc.data().createdAt.toDate(),
-            babies,
-            members,
-          } as Family);
-          setLoading(false);
-        } catch (err) {
-          console.error('Error fetching family data:', err);
-          setError(err instanceof Error ? err : new Error('Failed to fetch family data'));
-          setLoading(false);
+            id: familyData.id,
+            createdAt: familyData.createdAt,
+            creatorId: familyData.creatorId,
+            babies: familyData.babies,
+            members: familyData.members,
+          });
+        } else {
+          setFamily(null);
         }
-      },
-      (err) => {
-        console.error('Family snapshot error:', err);
-        setError(err);
         setLoading(false);
       }
     );
@@ -88,9 +70,9 @@ export function useFamily(familyId?: string) {
     return () => unsubscribe();
   }, [familyId]);
 
-  const createNewFamily = async (babyName: string, birthday: Date) => {
+  const createNewFamily = async (babyName: string, birthday: Date, memberData?: any) => {
     try {
-      const newFamilyId = await createFamily(babyName, birthday);
+      const newFamilyId = await familyOperations.createFamily(babyName, birthday, memberData);
       return newFamilyId;
     } catch (err) {
       console.error('Error creating family:', err);

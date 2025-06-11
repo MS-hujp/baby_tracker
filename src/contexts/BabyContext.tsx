@@ -1,24 +1,20 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { BabyInfo, FamilyWithData, Participant } from '../types/family';
 import { babyOperations, familyOperations } from '../utils/familyFirestore';
+import { familyIdResolver } from '../utils/familyIdResolver';
 
 type BabyContextType = {
   babyInfo: BabyInfo | null;
   family: FamilyWithData | null;
   familyId: string | null;
+  currentUser: { displayName: string; color: string; role: string } | null; // 現在のユーザー情報
   loading: boolean;
   error: string | null;
   updateBabyInfo: (data: Partial<BabyInfo>) => Promise<void>;
   addParticipant: (participant: Participant) => Promise<void>;
-  createNewFamily: (babyName: string, birthday: Date) => Promise<string>;
+  createNewFamily: (babyName: string, birthday: Date, memberData?: any) => Promise<string>;
   setFamilyId: (familyId: string) => void;
 };
-
-// デフォルトの参加者データ（UI互換性のため）
-const defaultParticipants: Participant[] = [
-  { name: "ゆか", color: "#FFF" },
-  { name: "けん", color: "blue" },
-];
 
 const BabyContext = createContext<BabyContextType | undefined>(undefined);
 
@@ -26,6 +22,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [family, setFamily] = useState<FamilyWithData | null>(null);
   const [babyInfo, setBabyInfo] = useState<BabyInfo | null>(null);
   const [familyId, setFamilyIdState] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<{ displayName: string; color: string; role: string } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,6 +32,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(false);
       setFamily(null);
       setBabyInfo(null);
+      setCurrentUser(null);
       return;
     }
 
@@ -63,12 +61,29 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           if (familyData) {
             setFamily(familyData);
             
+            // 現在のユーザーを特定
+            const currentMember = familyData.members.find(member => member.isCurrentUser);
+            if (currentMember) {
+              setCurrentUser({
+                displayName: currentMember.displayName,
+                color: currentMember.color,
+                role: currentMember.role
+              });
+            }
+            
+            // 家族メンバーから参加者リストを作成
+            const participants: Participant[] = familyData.members.map(member => ({
+              name: member.displayName,
+              color: member.color,
+              uid: member.id
+            }));
+            
             // 最初の赤ちゃんの情報をBabyInfoに変換
             if (familyData.babies.length > 0) {
               const firstBaby = familyData.babies[0];
               const convertedBabyInfo = babyOperations.convertToBabyInfo(
                 firstBaby,
-                defaultParticipants
+                participants // 実際の家族メンバーを使用
               );
               setBabyInfo(convertedBabyInfo);
             } else {
@@ -77,6 +92,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           } else {
             setFamily(null);
             setBabyInfo(null);
+            setCurrentUser(null);
           }
           
           setLoading(false);
@@ -127,7 +143,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // 参加者の追加（UI互換性のため、ローカルステートのみ更新）
+  // 参加者の追加（家族メンバーに追加）
   const addParticipant = async (participant: Participant) => {
     try {
       setLoading(true);
@@ -136,9 +152,9 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error('Baby info not found');
       }
       
+      // 既存の参加者リストに追加（ローカルステートのみ）
       const updatedParticipants = [...babyInfo.participants, participant];
       
-      // ローカルステートを更新（実際のDBには保存しない）
       setBabyInfo({
         ...babyInfo,
         participants: updatedParticipants
@@ -153,30 +169,51 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // 新しい家族の作成
-  const createNewFamily = async (babyName: string, birthday: Date): Promise<string> => {
+  // 新しい家族の作成（拡張版）
+  const createNewFamily = async (babyName: string, birthday: Date, memberData?: any): Promise<string> => {
     try {
       setLoading(true);
       setError(null);
       
-      console.log('Creating new family with baby:', babyName);
-      const newFamilyId = await familyOperations.createFamily(babyName, birthday);
+      console.log('Creating new family with baby:', babyName, 'and members:', memberData);
+      const newFamilyId = await familyOperations.createFamily(babyName, birthday, memberData);
       
-      // 新しい家族IDを設定（これにより useEffect が実行される）
-      setFamilyIdState(newFamilyId);
+      // 家族IDの設定は外部で行う（無限ループを避けるため）
+      // setFamilyIdState(newFamilyId); // 削除
       
       return newFamilyId;
     } catch (err) {
       console.error('Error creating family:', err);
       setError('家族の作成に失敗しました');
       throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 家族IDの設定
+  // 家族IDの設定（統一システム使用版 - 安全な非同期実行）
   const setFamilyId = (newFamilyId: string) => {
-    console.log('Setting family ID:', newFamilyId);
-    setFamilyIdState(newFamilyId);
+    console.log('🏠 Setting family ID via unified system:', newFamilyId);
+    
+    // 非同期処理を内部で実行（awaitしない）
+    familyIdResolver.updateFamilyId(newFamilyId)
+      .then((wasUpdated) => {
+        if (wasUpdated) {
+          // 実際に更新された場合のみローカル状態を更新
+          setFamilyIdState(newFamilyId);
+        } else {
+          console.log('⚠️ Family ID not updated (already set or updating)');
+          // 統一システムで更新されなかった場合でも、ローカル状態は同期
+          if (familyIdResolver.getCurrentFamilyId() === newFamilyId) {
+            setFamilyIdState(newFamilyId);
+          }
+        }
+      })
+      .catch((err) => {
+        console.error('❌ Error setting family ID:', err);
+        // エラーの場合でもローカル状態は更新（フォールバック）
+        setFamilyIdState(newFamilyId);
+      });
   };
 
   return (
@@ -185,6 +222,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         babyInfo, 
         family,
         familyId,
+        currentUser,
         loading, 
         error, 
         updateBabyInfo, 

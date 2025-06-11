@@ -26,6 +26,10 @@ import {
     SleepRecord
 } from '../types/family';
 
+// 【重要】Firebase Authentication は絶対に使用禁止
+// バグが発生することが判明しているため、未来永劫導入しない
+// 認証なしの家族ベースシステムで家族メンバー管理を行う
+
 // Helper function to convert Firestore timestamp to Date
 const convertTimestamp = (timestamp: any): Date => {
   if (timestamp instanceof Timestamp) {
@@ -39,8 +43,13 @@ const convertTimestamp = (timestamp: any): Date => {
 
 // Family Operations
 export const familyOperations = {
-  // Create a new family with initial baby
-  async createFamily(babyName: string, birthday: Date): Promise<string> {
+  // Create a new family with initial baby and members
+  async createFamily(babyName: string, birthday: Date, memberData?: {
+    displayName: string;
+    role: 'dad' | 'mom' | 'other';
+    color: string;
+    isCurrentUser: boolean;
+  }[]): Promise<string> {
     // Create family document
     const familyRef = doc(collection(db, 'families'));
     await setDoc(familyRef, {
@@ -57,12 +66,29 @@ export const familyOperations = {
       updatedAt: serverTimestamp(),
     });
 
-    // Create default member
-    await setDoc(doc(collection(familyRef, 'members'), 'default-user'), {
-      role: 'dad',
-      email: '',
-      joinedAt: serverTimestamp(),
-    });
+    // Create family members (if provided) or default member
+    if (memberData && memberData.length > 0) {
+      for (const member of memberData) {
+        await setDoc(doc(collection(familyRef, 'members'), member.displayName.toLowerCase()), {
+          displayName: member.displayName,
+          role: member.role,
+          email: '', // Empty for now (authentication not used)
+          color: member.color,
+          isCurrentUser: member.isCurrentUser,
+          joinedAt: serverTimestamp(),
+        });
+      }
+    } else {
+      // Create default member for backward compatibility
+      await setDoc(doc(collection(familyRef, 'members'), 'default-user'), {
+        displayName: 'ユーザー',
+        role: 'dad',
+        email: '',
+        color: '#FF6B6B',
+        isCurrentUser: true,
+        joinedAt: serverTimestamp(),
+      });
+    }
 
     return familyRef.id;
   },
@@ -195,44 +221,65 @@ export const babyOperations = {
 
 // Record Operations
 export const recordOperations = {
+  // Get current user ID from family members
+  getCurrentUserId(familyId: string): Promise<string> {
+    return new Promise((resolve) => {
+      const familyRef = doc(db, 'families', familyId);
+      const membersRef = collection(familyRef, 'members');
+      
+      getDocs(membersRef).then(snapshot => {
+        const currentMember = snapshot.docs.find(doc => doc.data().isCurrentUser);
+        resolve(currentMember ? currentMember.id : 'default-user');
+      }).catch(() => {
+        resolve('default-user');
+      });
+    });
+  },
+
   // Add feeding record
-  async addFeedingRecord(familyId: string, babyId: string, data: Omit<FeedingRecord, 'id' | 'babyId' | 'createdAt' | 'updatedAt' | 'createdBy'>): Promise<string> {
+  async addFeedingRecord(familyId: string, babyId: string, data: Omit<FeedingRecord, 'id' | 'type' | 'babyId' | 'createdAt' | 'updatedAt' | 'createdBy'>): Promise<string> {
     const recordsRef = collection(db, 'families', familyId, 'babies', babyId, 'records');
+    const currentUserId = await this.getCurrentUserId(familyId);
+    
     const docRef = await addDoc(recordsRef, {
       ...data,
       type: 'feeding',
       babyId,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-      createdBy: 'default-user',
+      createdBy: currentUserId,
     });
     return docRef.id;
   },
 
   // Add diaper record
-  async addDiaperRecord(familyId: string, babyId: string, data: Omit<DiaperRecord, 'id' | 'babyId' | 'createdAt' | 'updatedAt' | 'createdBy'>): Promise<string> {
+  async addDiaperRecord(familyId: string, babyId: string, data: Omit<DiaperRecord, 'id' | 'type' | 'babyId' | 'createdAt' | 'updatedAt' | 'createdBy'>): Promise<string> {
     const recordsRef = collection(db, 'families', familyId, 'babies', babyId, 'records');
+    const currentUserId = await this.getCurrentUserId(familyId);
+    
     const docRef = await addDoc(recordsRef, {
       ...data,
       type: 'diaper',
       babyId,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-      createdBy: 'default-user',
+      createdBy: currentUserId,
     });
     return docRef.id;
   },
 
   // Add sleep record
-  async addSleepRecord(familyId: string, babyId: string, data: Omit<SleepRecord, 'id' | 'babyId' | 'createdAt' | 'updatedAt' | 'createdBy'>): Promise<string> {
+  async addSleepRecord(familyId: string, babyId: string, data: Omit<SleepRecord, 'id' | 'type' | 'babyId' | 'createdAt' | 'updatedAt' | 'createdBy'>): Promise<string> {
     const recordsRef = collection(db, 'families', familyId, 'babies', babyId, 'records');
+    const currentUserId = await this.getCurrentUserId(familyId);
+    
     const docRef = await addDoc(recordsRef, {
       ...data,
       type: 'sleep',
       babyId,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-      createdBy: 'default-user',
+      createdBy: currentUserId,
     });
     return docRef.id;
   },
@@ -247,15 +294,17 @@ export const recordOperations = {
   },
 
   // Add measurement record
-  async addMeasurementRecord(familyId: string, babyId: string, data: Omit<MeasurementRecord, 'id' | 'babyId' | 'createdAt' | 'updatedAt' | 'createdBy'>): Promise<string> {
+  async addMeasurementRecord(familyId: string, babyId: string, data: Omit<MeasurementRecord, 'id' | 'type' | 'babyId' | 'createdAt' | 'updatedAt' | 'createdBy'>): Promise<string> {
     const recordsRef = collection(db, 'families', familyId, 'babies', babyId, 'records');
+    const currentUserId = await this.getCurrentUserId(familyId);
+    
     const docRef = await addDoc(recordsRef, {
       ...data,
       type: 'measurement',
       babyId,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-      createdBy: 'default-user',
+      createdBy: currentUserId,
     });
     return docRef.id;
   },
