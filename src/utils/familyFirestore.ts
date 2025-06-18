@@ -23,7 +23,8 @@ import {
     MeasurementRecord,
     Participant,
     Record,
-    SleepRecord
+    SleepRecord,
+    WakeupRecord
 } from '../types/family';
 
 // 【重要】Firebase Authentication は絶対に使用禁止
@@ -291,6 +292,27 @@ export const recordOperations = {
     const docRef = await addDoc(recordsRef, {
       ...cleanData,
       type: 'sleep',
+      babyId,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      createdBy: currentUserId,
+    });
+    return docRef.id;
+  },
+
+  // Add wakeup record
+  async addWakeupRecord(familyId: string, babyId: string, data: Omit<WakeupRecord, 'id' | 'type' | 'babyId' | 'createdAt' | 'updatedAt' | 'createdBy'>): Promise<string> {
+    const recordsRef = collection(db, 'families', familyId, 'babies', babyId, 'records');
+    const currentUserId = await this.getCurrentUserId(familyId);
+    
+    // undefinedの値を除外
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([_, value]) => value !== undefined)
+    );
+    
+    const docRef = await addDoc(recordsRef, {
+      ...cleanData,
+      type: 'wakeup',
       babyId,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),

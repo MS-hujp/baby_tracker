@@ -70,6 +70,12 @@ export interface SleepRecord extends BaseRecord {
   notes?: string;
 }
 
+export interface WakeupRecord extends BaseRecord {
+  type: 'wakeup';
+  timestamp: Date;
+  notes?: string;
+}
+
 export interface MeasurementRecord extends BaseRecord {
   type: 'measurement';
   timestamp: Date;
@@ -79,7 +85,7 @@ export interface MeasurementRecord extends BaseRecord {
   notes?: string;
 }
 
-export type Record = FeedingRecord | DiaperRecord | SleepRecord | MeasurementRecord;
+export type Record = FeedingRecord | DiaperRecord | SleepRecord | WakeupRecord | MeasurementRecord;
 
 // Participant type for UI compatibility
 export interface Participant {

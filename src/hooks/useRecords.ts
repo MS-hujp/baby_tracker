@@ -61,6 +61,20 @@ export function useRecords() {
     return await recordOperations.addSleepRecord(familyId, babyInfo.id, data);
   }, [familyId, babyInfo?.id, currentUser]);
 
+  // 起床記録の追加
+  const addWakeupRecord = useCallback(async (data: {
+    timestamp: Date;
+    notes?: string;
+  }) => {
+    if (!familyId || !babyInfo?.id) {
+      throw new Error('Family ID or Baby ID not found');
+    }
+
+    console.log('Adding wakeup record for user:', currentUser?.displayName);
+    
+    return await recordOperations.addWakeupRecord(familyId, babyInfo.id, data);
+  }, [familyId, babyInfo?.id, currentUser]);
+
   // 睡眠記録の更新（起床時）
   const updateSleepRecord = useCallback(async (recordId: string, data: Partial<SleepRecord>) => {
     if (!familyId || !babyInfo?.id) {
@@ -116,6 +130,7 @@ export function useRecords() {
     addFeedingRecord,
     addDiaperRecord,
     addSleepRecord,
+    addWakeupRecord,
     updateSleepRecord,
     addMeasurementRecord,
     

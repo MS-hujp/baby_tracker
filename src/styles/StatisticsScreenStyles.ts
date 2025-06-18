@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
   },
   content: {
     backgroundColor: '#fff',
-    marginBottom: 20,
+    marginBottom: 10,
     paddingVertical: 10,
     paddingHorizontal: 10,
     height: "auto",
@@ -26,7 +26,7 @@ export const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 15,
+    marginBottom: 10,
   },
   tab: {
     flex: 1,
@@ -53,9 +53,9 @@ export const styles = StyleSheet.create({
   },
   graphContainer: {
     borderRadius: 8,
-    padding: 16,
-    marginVertical: 8,
-    height: 400,
+    padding: 5,
+    marginVertical: 5,
+    height: 700,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -79,7 +79,7 @@ export const styles = StyleSheet.create({
   card: {
     backgroundColor: '#f5f5f5',
     borderRadius: 8,
-    padding: 16,
+    padding: 10,
     marginVertical: 8,
   },
   cardTitle: {
@@ -94,7 +94,7 @@ export const styles = StyleSheet.create({
   },
   aiContainer: {
     backgroundColor: '#fff',
-    marginBottom: 20,
+    marginBottom: 10,
     paddingVertical: 10,
     paddingHorizontal: 10,
     height: "auto",

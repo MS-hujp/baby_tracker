@@ -23,7 +23,8 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
     addDiaperRecord, 
     addSleepRecord, 
     addMeasurementRecord,
-    getRecords 
+    getRecords,
+    addWakeupRecord
   } = useRecords();
 
   // Firebaseから記録を取得
@@ -92,6 +93,15 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
                   }
                 }
               };
+            case 'wakeup':
+              return {
+                ...baseRecord,
+                details: {
+                  wakeup: {
+                    time: timestamp
+                  }
+                }
+              };
             case 'measurement':
               return {
                 ...baseRecord,
@@ -108,7 +118,12 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
           }
         });
 
-        setRecords(timelineRecords);
+        // 降順でソート（新しい記録が上）
+        const sortedRecords = timelineRecords.sort((a, b) => 
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        );
+
+        setRecords(sortedRecords);
       } catch (err) {
         console.error('Error loading records:', err);
         setError('記録の読み込みに失敗しました');
@@ -161,9 +176,9 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
           break;
 
         case 'wakeup':
-          // wakeupはsleep記録の更新として処理
-          recordId = await addSleepRecord({
-            startTime: record.timestamp,
+          // wakeupは独立した記録タイプとして保存
+          recordId = await addWakeupRecord({
+            timestamp: record.timestamp,
             notes: ''
           });
           break;
