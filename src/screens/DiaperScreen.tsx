@@ -3,11 +3,11 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from "react";
 import {
-    Pressable,
-    SafeAreaView,
-    ScrollView,
-    Text,
-    View
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  View
 } from "react-native";
 import { clockIcon, diaperIcon, peeIcon, pooIcon } from "../assets/icons/icons";
 import Header from "../components/layout/Header";
@@ -24,11 +24,11 @@ type DiaperScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 
 const DiaperScreen = () => {
   const navigation = useNavigation<DiaperScreenNavigationProp>();
   const { currentUser } = useAuth();
-  const { addRecord } = useTimeline();
+  const { addRecord, loading, error } = useTimeline();
   const { babyInfo } = useBaby();
   const [selectedTypes, setSelectedTypes] = useState({
     pee: false,
-    poo: false,
+    poop: false,
   });
   const [selectedTime, setSelectedTime] = useState<Date>(new Date());
   const [memo, setMemo] = useState("");
@@ -42,7 +42,7 @@ const DiaperScreen = () => {
     ],
   };
 
-  const toggleType = (type: "pee" | "poo") => {
+  const toggleType = (type: "pee" | "poop") => {
     setSelectedTypes((prev) => ({
       ...prev,
       [type]: !prev[type],
@@ -55,22 +55,31 @@ const DiaperScreen = () => {
     }
   };
 
-  const handleRecord = () => {
+  const handleRecord = async () => {
     if (!currentUser) return;
 
-    addRecord({
-      type: 'diaper',
-      timestamp: selectedTime,
-      user: currentUser,
-      details: {
-        diaper: {
-          pee: selectedTypes.pee,
-          poop: selectedTypes.poo,
+    try {
+      await addRecord({
+        type: 'diaper',
+        timestamp: selectedTime,
+        user: currentUser,
+        details: {
+          diaper: {
+            pee: selectedTypes.pee,
+            poop: selectedTypes.poop,
+          },
         },
-      },
-    });
+      });
 
-    // 記録後、ホーム画面に戻る
+      navigation.navigate('Home');
+    } catch (err) {
+      console.error('Error recording diaper:', err);
+    }
+  };
+
+  const handleCancel = () => {
+    setSelectedTime(new Date());
+    setSelectedTypes({ pee: false, poop: false });
     navigation.navigate('Home');
   };
 
@@ -84,7 +93,30 @@ const DiaperScreen = () => {
         alwaysBounceVertical={true}
       >
         <View style={styles.innerContainer}>
-          <Header {...babyInfo} />
+          <Header 
+            name={babyInfo?.name || '赤ちゃん'}
+            ageInDays={babyInfo?.ageInDays || 0}
+            participants={babyInfo?.participants || []}
+          />
+          
+          {/* エラー表示 */}
+          {error && (
+            <View style={{
+              backgroundColor: '#ffebee',
+              borderColor: '#f44336',
+              borderWidth: 1,
+              borderRadius: 8,
+              padding: 12,
+              marginBottom: 16,
+            }}>
+              <Text style={{
+                color: '#d32f2f',
+                fontSize: 14,
+                textAlign: 'center',
+              }}>{error}</Text>
+            </View>
+          )}
+          
           <View style={styles.recordSectionContainer}>
             <View style={styles.recordSectionTitle}>
               <View style={styles.diaperIcon}>
@@ -127,12 +159,12 @@ const DiaperScreen = () => {
               <Pressable
                 style={[
                   styles.pooSection,
-                  selectedTypes.poo && styles.selectedSection,
+                  selectedTypes.poop && styles.selectedSection,
                 ]}
-                onPress={() => toggleType("poo")}
+                onPress={() => toggleType("poop")}
               >
                 <View style={styles.checkbox}>
-                  {selectedTypes.poo && (
+                  {selectedTypes.poop && (
                     <View style={styles.checkboxInner} />
                   )}
                 </View>
@@ -177,7 +209,7 @@ const DiaperScreen = () => {
               <View style={styles.buttonContainer}>
                 <Pressable
                   style={[styles.button, styles.cancelButton]}
-                  onPress={() => navigation.navigate('Home')}
+                  onPress={handleCancel}
                 >
                   <Text style={styles.buttonText}>キャンセル</Text>
                 </Pressable>

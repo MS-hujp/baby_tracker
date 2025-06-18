@@ -85,7 +85,11 @@ const MeasurementScreen = () => {
         alwaysBounceVertical={true}
       >
         <View style={styles.innerContainer}>
-          <Header {...babyInfo} />
+          <Header 
+            name={babyInfo?.name || '赤ちゃん'}
+            ageInDays={babyInfo?.ageInDays || 0}
+            participants={babyInfo?.participants || []}
+          />
           <View style={styles.recordSectionContainer}>
             <View style={styles.recordSectionTitle}>
               <View style={styles.measurementIcon}>

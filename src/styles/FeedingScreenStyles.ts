@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: '#9e9e9e',
+    backgroundColor: '#ff6b6b',
   },
   okButton: {
     backgroundColor: '#ff69b4',
@@ -229,7 +229,19 @@ const styles = StyleSheet.create({
   milkAmountPicker: {
     height: 30,
   },
-
+  errorContainer: {
+    backgroundColor: '#ffebee',
+    borderColor: '#f44336',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#d32f2f',
+    fontSize: 14,
+    textAlign: 'center',
+  },
 });
 export default styles;
 

@@ -101,6 +101,19 @@ const HomeScreen = () => {
             </Text>
           </View>
 
+          {/* Step3: 記録機能統合テスト説明 */}
+          <View style={styles.infoBox}>
+            <Text style={styles.infoText}>
+              🧪 Step3: 記録機能統合テスト
+            </Text>
+            <Text style={styles.infoText}>
+              下のボタンから記録を追加して、Firebaseへの保存をテストしてください。
+            </Text>
+            <Text style={styles.infoText}>
+              記録後は「タイムライン」タブで確認できます。
+            </Text>
+          </View>
+
           <View style={styles.recordSectionContainer}>
             <View style={styles.recordSectionTitle}>
               <TablerIcon

@@ -241,8 +241,13 @@ export const recordOperations = {
     const recordsRef = collection(db, 'families', familyId, 'babies', babyId, 'records');
     const currentUserId = await this.getCurrentUserId(familyId);
     
+    // undefinedの値を除外
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([_, value]) => value !== undefined)
+    );
+    
     const docRef = await addDoc(recordsRef, {
-      ...data,
+      ...cleanData,
       type: 'feeding',
       babyId,
       createdAt: serverTimestamp(),
@@ -257,8 +262,13 @@ export const recordOperations = {
     const recordsRef = collection(db, 'families', familyId, 'babies', babyId, 'records');
     const currentUserId = await this.getCurrentUserId(familyId);
     
+    // undefinedの値を除外
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([_, value]) => value !== undefined)
+    );
+    
     const docRef = await addDoc(recordsRef, {
-      ...data,
+      ...cleanData,
       type: 'diaper',
       babyId,
       createdAt: serverTimestamp(),
@@ -273,8 +283,13 @@ export const recordOperations = {
     const recordsRef = collection(db, 'families', familyId, 'babies', babyId, 'records');
     const currentUserId = await this.getCurrentUserId(familyId);
     
+    // undefinedの値を除外
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([_, value]) => value !== undefined)
+    );
+    
     const docRef = await addDoc(recordsRef, {
-      ...data,
+      ...cleanData,
       type: 'sleep',
       babyId,
       createdAt: serverTimestamp(),
@@ -287,8 +302,14 @@ export const recordOperations = {
   // Update sleep record (for wake up)
   async updateSleepRecord(familyId: string, babyId: string, recordId: string, data: Partial<SleepRecord>): Promise<void> {
     const recordRef = doc(db, 'families', familyId, 'babies', babyId, 'records', recordId);
+    
+    // undefinedの値を除外
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([_, value]) => value !== undefined)
+    );
+    
     await updateDoc(recordRef, {
-      ...data,
+      ...cleanData,
       updatedAt: serverTimestamp(),
     });
   },
@@ -298,8 +319,13 @@ export const recordOperations = {
     const recordsRef = collection(db, 'families', familyId, 'babies', babyId, 'records');
     const currentUserId = await this.getCurrentUserId(familyId);
     
+    // undefinedの値を除外
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([_, value]) => value !== undefined)
+    );
+    
     const docRef = await addDoc(recordsRef, {
-      ...data,
+      ...cleanData,
       type: 'measurement',
       babyId,
       createdAt: serverTimestamp(),

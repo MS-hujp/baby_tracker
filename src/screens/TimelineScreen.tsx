@@ -1,22 +1,22 @@
 import React from "react";
-import { SafeAreaView, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, SafeAreaView, ScrollView, Text, View } from "react-native";
 import { timelineIcon } from "../assets/icons/icons";
 import TablerIcon from "../components/TablerIcon";
 import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
 import TimelineItem from "../components/timeline/TimelineItem";
+import { useBaby } from "../contexts/BabyContext";
 import { useTimeline } from "../contexts/TimelineContext";
 import { styles } from "../styles/TimelineScreenStyles";
 
 const TimelineScreen: React.FC = () => {
-  const { records } = useTimeline();
+  const { records, loading, error } = useTimeline();
+  const { babyInfo } = useBaby();
+
   const headerProps = {
-    babyName: "まきちゃん",
-    ageInDays: 30,
-    participants: [
-      { name: "ゆか", color: "#FFF" },
-      { name: "けん", color: "blue" },
-    ],
+    name: babyInfo?.name || '赤ちゃん',
+    ageInDays: babyInfo?.ageInDays || 0,
+    participants: babyInfo?.participants || [],
   };
 
   return (
@@ -38,8 +38,31 @@ const TimelineScreen: React.FC = () => {
               <Text style={styles.titleText}>タイムライン</Text>
             </View>
             
+            {/* エラー表示 */}
+            {error && (
+              <View style={{
+                backgroundColor: '#ffebee',
+                borderColor: '#f44336',
+                borderWidth: 1,
+                borderRadius: 8,
+                padding: 12,
+                marginBottom: 16,
+              }}>
+                <Text style={{
+                  color: '#d32f2f',
+                  fontSize: 14,
+                  textAlign: 'center',
+                }}>{error}</Text>
+              </View>
+            )}
+            
             <View style={styles.timelineContainer}>
-              {records.length === 0 ? (
+              {loading ? (
+                <View style={{ padding: 20, alignItems: 'center' }}>
+                  <ActivityIndicator size="large" color="#007AFF" />
+                  <Text style={{ marginTop: 10, color: '#666' }}>記録を読み込み中...</Text>
+                </View>
+              ) : records.length === 0 ? (
                 <Text style={styles.emptyText}>まだ記録がありません</Text>
               ) : (
                 records.map((record) => (

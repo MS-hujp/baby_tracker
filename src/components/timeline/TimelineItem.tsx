@@ -7,7 +7,10 @@ type TimelineItemProps = {
 };
 
 const TimelineItem: React.FC<TimelineItemProps> = ({ record }) => {
-  const formatTime = (date: Date) => {
+  const formatTime = (date: Date | undefined) => {
+    if (!date) {
+      return '時間不明';
+    }
     return date.toLocaleTimeString('ja-JP', {
       hour: '2-digit',
       minute: '2-digit',

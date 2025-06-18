@@ -162,6 +162,13 @@ const LoginScreen = () => {
                   color="#00b894"
                 />
               </View>
+              <View style={{ marginTop: 10 }}>
+                <Button
+                  title="📝 Step3: 記録機能統合テスト"
+                  onPress={() => navigation.navigate('Home')}
+                  color="#e17055"
+                />
+              </View>
             </View>
           )}
 

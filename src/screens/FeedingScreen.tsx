@@ -24,7 +24,7 @@ type FeedingScreenNavigationProp = NativeStackNavigationProp<RootStackParamList,
 const FeedingScreen = () => {
   const navigation = useNavigation<FeedingScreenNavigationProp>();
   const { currentUser } = useAuth();
-  const { addRecord } = useTimeline();
+  const { addRecord, loading, error } = useTimeline();
   const { babyInfo } = useBaby();
   const [selectedFeedings, setSelectedFeedings] = useState({
     motherMilk: false,
@@ -48,40 +48,45 @@ const FeedingScreen = () => {
     }
   };
 
-  const handleRecord = () => {
+  const handleRecord = async () => {
     if (!currentUser) return;
 
-    // 母乳の場合
-    if (selectedFeedings.motherMilk) {
-      addRecord({
-        type: 'feeding',
-        timestamp: selectedTime,
-        user: currentUser,
-        details: {
-          feeding: {
-            type: 'breast',
+    try {
+      // 母乳の場合
+      if (selectedFeedings.motherMilk) {
+        await addRecord({
+          type: 'feeding',
+          timestamp: selectedTime,
+          user: currentUser,
+          details: {
+            feeding: {
+              type: 'breast',
+            },
           },
-        },
-      });
-    }
+        });
+      }
 
-    // ミルクの場合
-    if (selectedFeedings.formulaMilk) {
-      addRecord({
-        type: 'feeding',
-        timestamp: selectedTime,
-        user: currentUser,
-        details: {
-          feeding: {
-            type: 'formula',
-            amount: milkAmount,
+      // ミルクの場合
+      if (selectedFeedings.formulaMilk) {
+        await addRecord({
+          type: 'feeding',
+          timestamp: selectedTime,
+          user: currentUser,
+          details: {
+            feeding: {
+              type: 'formula',
+              amount: milkAmount,
+            },
           },
-        },
-      });
-    }
+        });
+      }
 
-    // 記録後、ホーム画面に戻る
-    navigation.navigate('Home');
+      // 記録後、ホーム画面に戻る
+      navigation.navigate('Home');
+    } catch (err) {
+      console.error('Error recording feeding:', err);
+      // エラーはTimelineContextで処理されるので、ここではログのみ
+    }
   };
   
   return (
@@ -94,7 +99,19 @@ const FeedingScreen = () => {
         alwaysBounceVertical={true}
       >
         <View style={styles.innerContainer}>
-          <Header {...babyInfo} />
+          <Header 
+            name={babyInfo?.name || '赤ちゃん'}
+            ageInDays={babyInfo?.ageInDays || 0}
+            participants={babyInfo?.participants || []}
+          />
+          
+          {/* エラー表示 */}
+          {error && (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          )}
+          
           <View style={styles.recordSectionContainer}>
             <View style={styles.recordSectionTitle}>
               <View style={styles.mealIcon}>
