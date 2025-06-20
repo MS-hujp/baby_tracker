@@ -82,9 +82,6 @@ const StatisticsScreen: React.FC = () => {
         <body>
           <div id="chart"></div>
           <script>
-            // キャッシュクリア用のタイムスタンプ
-            console.log('Chart HTML loaded at:', new Date().toISOString());
-            
             // 幅が0になる問題を回避するため、初期化を遅延
             setTimeout(function() {
               try {
@@ -94,8 +91,6 @@ const StatisticsScreen: React.FC = () => {
                 chartDom.style.width = '380px';
                 chartDom.style.height = '700px';
                 
-                console.log('Chart container size before init:', chartDom.offsetWidth, 'x', chartDom.offsetHeight);
-                
                 var myChart = echarts.init(chartDom, null, {
                   renderer: 'canvas',
                   width: 380,
@@ -103,28 +98,10 @@ const StatisticsScreen: React.FC = () => {
                 });
 
                 var option = ${JSON.stringify(option)};
-                console.log('Chart option:', option);
-                
-                // WebView内のログをReact Native側に送信
-                window.ReactNativeWebView.postMessage(JSON.stringify({
-                  type: 'debug',
-                  message: 'Chart option loaded',
-                  tooltipConfig: option.tooltip,
-                  seriesData: {
-                    breast: option.series[0].data.length,
-                    formula: option.series[1].data.length,
-                    both: option.series[2].data.length
-                  }
-                }));
-                
-                // ツールチップの設定を確認
-                console.log('Tooltip configuration:', option.tooltip);
                 
                 // WebView内でツールチップのフォーマッターを再定義
                 if (option.tooltip) {
                   option.tooltip.formatter = function(params) {
-                    console.log('Tooltip triggered with params:', params);
-                    
                     // params.value[1]から直接時刻を計算
                     var timeValue = params.value[1];
                     var hours = Math.floor(timeValue);
@@ -134,56 +111,25 @@ const StatisticsScreen: React.FC = () => {
                     var type = params.seriesName === '母乳' ? '母乳' : params.seriesName === 'ミルク' ? 'ミルク' : '両方';
                     var result = type + '<br/>' + params.value[0] + ' ' + displayTime;
                     
-                    console.log('Tooltip result:', result);
-                    
-                    // React Native側にツールチップ情報を送信
-                    window.ReactNativeWebView.postMessage(JSON.stringify({
-                      type: 'tooltip',
-                      params: params,
-                      result: result
-                    }));
-                    
                     return result;
                   };
-                  
-                  console.log('Formatter defined successfully');
-                  window.ReactNativeWebView.postMessage(JSON.stringify({
-                    type: 'debug',
-                    message: 'Tooltip formatter defined successfully'
-                  }));
-                } else {
-                  console.log('No tooltip found in option');
-                  window.ReactNativeWebView.postMessage(JSON.stringify({
-                    type: 'debug',
-                    message: 'No tooltip found in option'
-                  }));
                 }
                 
                 myChart.setOption(option);
                 
-                // チャートのイベントリスナーを追加
-                myChart.on('mouseover', function(params) {
-                  console.log('Mouse over event:', params);
-                  window.ReactNativeWebView.postMessage(JSON.stringify({
-                    type: 'debug',
-                    message: 'Mouse over event',
-                    params: params
-                  }));
-                });
-                
-                myChart.on('click', function(params) {
-                  console.log('Click event:', params);
-                  window.ReactNativeWebView.postMessage(JSON.stringify({
-                    type: 'debug',
-                    message: 'Click event',
-                    params: params
-                  }));
-                });
-                
-                // チャートの初期化完了を通知
+                console.log('Chart initialized with size:', myChart.getWidth(), 'x', myChart.getHeight());
+
                 window.ReactNativeWebView.postMessage(JSON.stringify({
-                  type: 'debug',
-                  message: 'Chart events attached successfully'
+                  type: 'chartInitialized',
+                  success: true,
+                  containerSize: {
+                    width: chartDom.offsetWidth,
+                    height: chartDom.offsetHeight
+                  },
+                  chartSize: {
+                    width: myChart.getWidth(),
+                    height: myChart.getHeight()
+                  }
                 }));
               } catch (error) {
                 window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -218,26 +164,6 @@ const StatisticsScreen: React.FC = () => {
             try {
               const data = JSON.parse(event.nativeEvent.data);
               console.log('WebView message:', data);
-              
-              // デバッグメッセージを特別に処理
-              if (data.type === 'debug') {
-                console.log('🔍 Debug:', data.message);
-                if (data.tooltipConfig) {
-                  console.log('🔍 Tooltip config:', data.tooltipConfig);
-                }
-                if (data.seriesData) {
-                  console.log('🔍 Series data counts:', data.seriesData);
-                }
-                if (data.params) {
-                  console.log('🔍 Event params:', data.params);
-                }
-              }
-              
-              // ツールチップのメッセージを特別に処理
-              if (data.type === 'tooltip') {
-                console.log('🔍 Tooltip triggered:', data.params);
-                console.log('🔍 Tooltip result:', data.result);
-              }
             } catch (error) {
               console.log('Raw WebView message:', event.nativeEvent.data, 'error:', error);
             }
@@ -308,19 +234,11 @@ const StatisticsScreen: React.FC = () => {
           };
         });
 
-        console.log('📊 Feeding data processed:', feedingData.length, 'records');
-        console.log('📊 Sample feeding data:', feedingData.slice(0, 3));
-
         // 母乳、ミルク、両方のデータを分離
         const breastData = feedingData.filter(item => item.type === 'breast').map(item => item.value);
         const formulaData = feedingData.filter(item => item.type === 'formula').map(item => item.value);
         // 現在の実装では両方の記録は別々に記録されるため、bothDataは空配列
         const bothData: any[] = [];
-
-        console.log('📊 Breast data points:', breastData.length);
-        console.log('📊 Formula data points:', formulaData.length);
-        console.log('📊 Sample breast data:', breastData.slice(0, 3));
-        console.log('📊 Sample formula data:', formulaData.slice(0, 3));
 
         return {
           title: {
