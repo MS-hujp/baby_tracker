@@ -105,11 +105,14 @@ const HomeScreen = () => {
   // 時間をフォーマット
   const formatTime = (date: Date | undefined) => {
     if (!date) return '--:--';
-    return date.toLocaleTimeString('ja-JP', {
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const time = date.toLocaleTimeString('ja-JP', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,
     });
+    return `${month}/${day} ${time}`;
   };
 
   // カテゴリの表示順序を定義

@@ -142,18 +142,18 @@ const styles = StyleSheet.create({
     color: "#454444",
     fontSize: 14,
     fontWeight: "bold",
-    width: "45%",
+    width: "30%",
   },
   timestamp: {
     color: "#454444",
     fontSize: 14,
     fontWeight: "bold",
-    width: "20%",
+    width: "30%",
   },
   logText:{
     color: "rgba(69, 68, 68, 0.5)",
     fontSize: 10,
-    width: "25%",
+    width: "30%",
   }
 });
 
