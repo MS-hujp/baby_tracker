@@ -36,7 +36,7 @@ const StatisticsScreen: React.FC = () => {
     // 記録タイプ別に分類
     const categorizedRecords = {
       feeding: records.filter(record => record.type === 'feeding'),
-      sleep: records.filter(record => record.type === 'sleep'),
+      sleep: records.filter(record => record.type === 'sleep' || record.type === 'wakeup'),
       diaper: records.filter(record => record.type === 'diaper'),
       measurement: records.filter(record => record.type === 'measurement')
     };
@@ -47,7 +47,7 @@ const StatisticsScreen: React.FC = () => {
 
   const tabs = [
     { id: "feeding" as TabType, label: "授乳" },
-    { id: "sleep" as TabType, label: "睡眠" },
+    { id: "sleep" as TabType, label: "睡眠・起床" },
     { id: "diaper" as TabType, label: "おむつ" },
     { id: "measurement" as TabType, label: "身長・体重" },
   ];
@@ -108,8 +108,8 @@ const StatisticsScreen: React.FC = () => {
                     var minutes = Math.round((timeValue % 1) * 60);
                     var displayTime = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
                     
-                    var type = params.seriesName === '母乳' ? '母乳' : params.seriesName === 'ミルク' ? 'ミルク' : '両方';
-                    var result = type + '<br/>' + params.value[0] + ' ' + displayTime;
+                    var type = params.seriesName === '母乳' ? '母乳' : params.seriesName === 'ミルク' ? 'ミルク' : '';
+                    var result = type + ' ' + params.value[0] + ' ' + displayTime;
                     
                     return result;
                   };
@@ -256,16 +256,15 @@ const StatisticsScreen: React.FC = () => {
               const displayTime = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
               
               const type = params.seriesName === '母乳' ? '母乳' : params.seriesName === 'ミルク' ? 'ミルク' : '両方';
-              const result = type + '<br/>' + params.value[0] + ' ' + displayTime;
-              console.log('Tooltip result:', result);
+              const result = type + ' ' + params.value[0] + ' ' + displayTime;
               return result;
             }
           },
           grid: {
-            left: '10%',
+            left: '8%',
             right: '10%',
-            top: '10%',
-            bottom: '15%'
+            top: '5%',
+            bottom: '10%'
           },
           xAxis: {
             type: 'category',
@@ -332,7 +331,7 @@ const StatisticsScreen: React.FC = () => {
             }
           ],
           legend: {
-            data: ['母乳', 'ミルク', '両方'],
+            data: ['母乳', 'ミルク'],
             bottom: 5,
             itemGap: 20,
             textStyle: {
@@ -342,26 +341,133 @@ const StatisticsScreen: React.FC = () => {
         };
 
       case "sleep":
-        // 睡眠データの処理（後で実装）
+        // 睡眠・起床データの処理
+        if (records.length === 0) {
+          return {
+            title: {
+              text: "睡眠・起床記録",
+              left: "center",
+            },
+            xAxis: { type: 'category', data: [] },
+            yAxis: { type: 'value', name: '時間', min: 0, max: 24 },
+            series: [{ data: [], type: 'scatter' }]
+          };
+        }
+
+        // 過去7日間の日付を生成
+        const sleepDates = [];
+        const sleepToday = new Date();
+        for (let i = 6; i >= 0; i--) {
+          const date = new Date(sleepToday);
+          date.setDate(sleepToday.getDate() - i);
+          sleepDates.push(`${date.getMonth() + 1}/${date.getDate()}`);
+        }
+
+        // 睡眠・起床データを日付と時間で整理
+        const sleepData = records.slice(0, 20).map(record => {
+          const recordDate = new Date(record.timestamp);
+          const hours = recordDate.getHours() + recordDate.getMinutes() / 60;
+          const dateStr = `${recordDate.getMonth() + 1}/${recordDate.getDate()}`;
+          const recordType = record.type; // 'sleep' または 'wakeup'
+          
+          return {
+            date: dateStr,
+            time: hours,
+            type: recordType,
+            value: [dateStr, hours]
+          };
+        });
+
+        // 睡眠、起床のデータを分離
+        const sleepRecords = sleepData.filter(item => item.type === 'sleep').map(item => item.value);
+        const wakeupRecords = sleepData.filter(item => item.type === 'wakeup').map(item => item.value);
+
         return {
           title: {
-            text: "睡眠記録",
-            left: "center",
+            show: false
+          },
+          tooltip: {
+            show: true,
+            trigger: 'item',
+            formatter: function(params: any) {
+              console.log('Sleep tooltip params:', params);
+              // params.value[1]から直接時刻を計算
+              const timeValue = params.value[1] as number;
+              const hours = Math.floor(timeValue);
+              const minutes = Math.round((timeValue % 1) * 60);
+              const displayTime = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
+              
+              const type = params.seriesName === '睡眠' ? '睡眠' : '起床';
+              const result = type + '<br/>' + params.value[0] + ' ' + displayTime;
+              console.log('Sleep tooltip result:', result);
+              return result;
+            }
+          },
+          grid: {
+            left: '8%',
+            right: '10%',
+            top: '5%',
+            bottom: '15%'
           },
           xAxis: {
             type: 'category',
-            data: records.slice(0, 7).map((_, index) => `${index + 1}回目`)
+            data: sleepDates,
+            name: '',
+            axisLabel: {
+              interval: 0,
+              rotate: 30
+            }
           },
           yAxis: {
             type: 'value',
-            name: '時間',
+            name: '',
+            min: 0,
+            max: 23,
+            interval: 1,
+            axisLabel: {
+              formatter: function(value: number) {
+                return String(value).padStart(2, '0') + ':00';
+              }
+            }
           },
-          series: [{
-            data: records.slice(0, 7).map(() => Math.random() * 3 + 1), // 仮のデータ
-            type: 'line',
-            smooth: true,
-            itemStyle: { color: "#ac73e6" }
-          }]
+          series: [
+            {
+              name: '睡眠',
+              type: 'scatter',
+              data: sleepRecords,
+              itemStyle: {
+                color: '#ad9ce6',
+                opacity: 0.8
+              },
+              symbolSize: 12,
+              blendMode: 'multiply',
+              tooltip: {
+                show: true
+              }
+            },
+            {
+              name: '起床',
+              type: 'scatter',
+              data: wakeupRecords,
+              itemStyle: {
+                color: '#e6ac73',
+                opacity: 0.8
+              },
+              symbolSize: 12,
+              blendMode: 'multiply',
+              tooltip: {
+                show: true
+              }
+            }
+          ],
+          legend: {
+            data: ['睡眠', '起床'],
+            bottom: 5,
+            itemGap: 20,
+            textStyle: {
+              fontSize: 12
+            }
+          }
         };
 
       case "diaper":
@@ -561,8 +667,8 @@ const StatisticsScreen: React.FC = () => {
             </View>
             <Text style={styles.aiCommentText}>
               {actualData[activeTab]?.length > 0 
-                ? `${activeTab === 'feeding' ? '授乳' : activeTab === 'sleep' ? '睡眠' : activeTab === 'diaper' ? 'おむつ交換' : '測定'}記録が${actualData[activeTab].length}件あります。データを分析中...`
-                : `${activeTab === 'feeding' ? '授乳' : activeTab === 'sleep' ? '睡眠' : activeTab === 'diaper' ? 'おむつ交換' : '測定'}記録がまだありません。記録を追加して統計を確認しましょう。`
+                ? `${activeTab === 'feeding' ? '授乳' : activeTab === 'sleep' ? '睡眠・起床' : activeTab === 'diaper' ? 'おむつ交換' : '測定'}記録が${actualData[activeTab].length}件あります。データを分析中...`
+                : `${activeTab === 'feeding' ? '授乳' : activeTab === 'sleep' ? '睡眠・起床' : activeTab === 'diaper' ? 'おむつ交換' : '測定'}記録がまだありません。記録を追加して統計を確認しましょう。`
               }
             </Text>
           </View>
