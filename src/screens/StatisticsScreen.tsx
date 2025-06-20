@@ -471,36 +471,149 @@ const StatisticsScreen: React.FC = () => {
         };
 
       case "diaper":
-        // おむつデータの処理（後で実装）
+        // おむつデータの処理
+        if (records.length === 0) {
+          return {
+            title: {
+              text: "おむつ交換記録",
+              left: "center",
+            },
+            xAxis: { type: 'category', data: [] },
+            yAxis: { type: 'value', name: '時間', min: 0, max: 24 },
+            series: [{ data: [], type: 'scatter' }]
+          };
+        }
+
+        // 過去7日間の日付を生成
+        const diaperDates = [];
+        const diaperToday = new Date();
+        for (let i = 6; i >= 0; i--) {
+          const date = new Date(diaperToday);
+          date.setDate(diaperToday.getDate() - i);
+          diaperDates.push(`${date.getMonth() + 1}/${date.getDate()}`);
+        }
+
+        // おむつデータを日付と時間で整理
+        const diaperData = records.slice(0, 20).map(record => {
+          const recordDate = new Date(record.timestamp);
+          const hours = recordDate.getHours() + recordDate.getMinutes() / 60;
+          const dateStr = `${recordDate.getMonth() + 1}/${recordDate.getDate()}`;
+          const diaperDetails = record.details?.diaper;
+          
+          // おしっことうんちの両方の記録を作成
+          const records = [];
+          
+          if (diaperDetails?.pee) {
+            records.push({
+              date: dateStr,
+              time: hours,
+              type: 'pee',
+              value: [dateStr, hours]
+            });
+          }
+          
+          if (diaperDetails?.poop) {
+            records.push({
+              date: dateStr,
+              time: hours,
+              type: 'poop',
+              value: [dateStr, hours]
+            });
+          }
+          
+          return records;
+        }).flat(); // 配列を平坦化
+
+        // おしっこ、うんちのデータを分離
+        const peeRecords = diaperData.filter(item => item.type === 'pee').map(item => item.value);
+        const pooRecords = diaperData.filter(item => item.type === 'poop').map(item => item.value);
+
         return {
           title: {
-            text: "おむつ交換記録",
-            left: "center",
+            show: false
+          },
+          tooltip: {
+            show: true,
+            trigger: 'item',
+            formatter: function(params: any) {
+              console.log('Diaper tooltip params:', params);
+              // params.value[1]から直接時刻を計算
+              const timeValue = params.value[1] as number;
+              const hours = Math.floor(timeValue);
+              const minutes = Math.round((timeValue % 1) * 60);
+              const displayTime = String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0');
+              
+              const type = params.seriesName === 'おしっこ' ? 'おしっこ' : 'うんち';
+              const result = type + '<br/>' + params.value[0] + ' ' + displayTime;
+              console.log('Diaper tooltip result:', result);
+              return result;
+            }
+          },
+          grid: {
+            left: '8%',
+            right: '10%',
+            top: '5%',
+            bottom: '10%'
           },
           xAxis: {
             type: 'category',
-            data: records.slice(0, 7).map((_, index) => `${index + 1}回目`)
+            data: diaperDates,
+            name: '',
+            axisLabel: {
+              interval: 0,
+              rotate: 30
+            }
           },
           yAxis: {
             type: 'value',
-            name: '回数',
+            name: '',
+            min: 0,
+            max: 23,
+            interval: 1,
+            axisLabel: {
+              formatter: function(value: number) {
+                return String(value).padStart(2, '0') + ':00';
+              }
+            }
           },
           series: [
             {
-              name: "おしっこ",
-              type: "bar",
-              stack: "total",
-              data: records.slice(0, 7).map(() => Math.floor(Math.random() * 3) + 1),
-              itemStyle: { color: "#ffcc66" }
+              name: 'おしっこ',
+              type: 'scatter',
+              data: peeRecords,
+              itemStyle: {
+                color: '#ffcc66',
+                opacity: 0.8
+              },
+              symbolSize: 12,
+              blendMode: 'multiply',
+              tooltip: {
+                show: true
+              }
             },
             {
-              name: "うんち",
-              type: "bar",
-              stack: "total",
-              data: records.slice(0, 7).map(() => Math.floor(Math.random() * 2)),
-              itemStyle: { color: "#9b7653" }
+              name: 'うんち',
+              type: 'scatter',
+              data: pooRecords,
+              itemStyle: {
+                color: '#9b7653',
+                opacity: 0.8
+              },
+              symbolSize: 12,
+              blendMode: 'multiply',
+              tooltip: {
+                show: true
+              }
             }
-          ]
+          ],
+          legend: {
+            data: ['おしっこ', 'うんち'],
+            bottom: 5,
+            itemGap: 20,
+            textStyle: {
+              fontSize: 12
+            }
+          }
         };
 
       case "measurement":
@@ -560,7 +673,6 @@ const StatisticsScreen: React.FC = () => {
       case "feeding":
         return styles.feedingGraphContainer;
       case "sleep":
-        return styles.sleepGraphContainer;
       case "diaper":
         return styles.diaperGraphContainer;
       case "measurement":
