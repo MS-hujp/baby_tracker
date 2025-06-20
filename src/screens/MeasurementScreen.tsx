@@ -3,19 +3,19 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from "react";
 import {
-    Pressable,
-    SafeAreaView,
-    ScrollView,
-    Text,
-    TextInput,
-    View,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import {
-    clockIcon,
-    heightIcon,
-    memoIcon,
-    temperatureIcon,
-    weightIcon
+  clockIcon,
+  heightIcon,
+  memoIcon,
+  temperatureIcon,
+  weightIcon
 } from "../assets/icons/icons";
 import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
@@ -169,7 +169,7 @@ const MeasurementScreen = () => {
                     onChangeText={setWeight}
                     keyboardType="numeric"
                   />
-                  <Text style={styles.measurementUnit}>kg</Text>
+                  <Text style={styles.measurementUnit}>g</Text>
                 </View>
 
                 <View style={styles.measurementItem}>

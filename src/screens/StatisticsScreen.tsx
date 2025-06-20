@@ -617,15 +617,83 @@ const StatisticsScreen: React.FC = () => {
         };
 
       case "measurement":
-        // 測定データの処理（後で実装）
+        // 測定データの処理
+        if (records.length === 0) {
+          return {
+            title: {
+              text: "測定記録",
+              left: "center",
+            },
+            xAxis: { type: 'category', data: [] },
+            yAxis: [
+              {
+                type: 'value',
+                name: '身長 (cm)',
+                position: 'left',
+                axisLine: { lineStyle: { color: "#8bc2ef" } }
+              },
+              {
+                type: 'value',
+                name: '体重 (g)',
+                position: 'right',
+                axisLine: { lineStyle: { color: "#f3a95f" } }
+              }
+            ],
+            series: [
+              {
+                name: "身長",
+                type: "line",
+                data: [],
+                itemStyle: { color: "#8bc2ef" }
+              },
+              {
+                name: "体重",
+                type: "line",
+                yAxisIndex: 1,
+                data: [],
+                itemStyle: { color: "#f3a95f" }
+              }
+            ]
+          };
+        }
+
+        // 測定データを日付で整理
+        const measurementData = records.slice(0, 10).map(record => {
+          const recordDate = new Date(record.timestamp);
+          const dateStr = `${recordDate.getMonth() + 1}/${recordDate.getDate()}`;
+          const measurementDetails = record.details?.measurement;
+          
+          return {
+            date: dateStr,
+            height: measurementDetails?.height || 0,
+            weight: measurementDetails?.weight || 0,
+            timestamp: recordDate.getTime() // ソート用にタイムスタンプを追加
+          };
+        }).sort((a, b) => a.timestamp - b.timestamp); // 古い順（左）から新しい順（右）にソート
+
+        // 日付とデータを分離
+        const measurementDates = measurementData.map(item => item.date);
+        const heightData = measurementData.map(item => item.height);
+        const weightData = measurementData.map(item => item.weight);
+
         return {
           title: {
-            text: "測定記録",
-            left: "center",
+            show: false
+          },
+          grid: {
+            left: '8%',
+            right: '20%',
+            top: '5%',
+            bottom: '10%'
           },
           xAxis: {
             type: 'category',
-            data: records.slice(0, 7).map((_, index) => `${index + 1}回目`)
+            data: measurementDates,
+            name: '',
+            axisLabel: {
+              interval: 0,
+              rotate: 30
+            }
           },
           yAxis: [
             {
@@ -636,7 +704,7 @@ const StatisticsScreen: React.FC = () => {
             },
             {
               type: 'value',
-              name: '体重 (kg)',
+              name: '体重 (g)',
               position: 'right',
               axisLine: { lineStyle: { color: "#f3a95f" } }
             }
@@ -645,14 +713,14 @@ const StatisticsScreen: React.FC = () => {
             {
               name: "身長",
               type: "line",
-              data: records.slice(0, 7).map(() => Math.random() * 10 + 50),
+              data: heightData,
               itemStyle: { color: "#8bc2ef" }
             },
             {
               name: "体重",
               type: "line",
               yAxisIndex: 1,
-              data: records.slice(0, 7).map(() => Math.random() * 2 + 3),
+              data: weightData,
               itemStyle: { color: "#f3a95f" }
             }
           ]
