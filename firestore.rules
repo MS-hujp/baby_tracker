@@ -2,13 +2,140 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isMember(familyId) {
-      return request.auth != null &&
-        exists(/databases/$(database)/documents/families/$(familyId)/members/$(request.auth.uid));
+    // ヘルパー関数：有効な家族IDかどうかをチェック
+    function isValidFamilyId(familyId) {
+      return familyId is string && familyId.size() > 0 && familyId.size() <= 50;
     }
-
-    match /families/{familyId}/{document=**} {
-      allow read, write: if isMember(familyId);
+    
+    // ヘルパー関数：有効な赤ちゃんIDかどうかをチェック
+    function isValidBabyId(babyId) {
+      return babyId is string && babyId.size() > 0 && babyId.size() <= 50;
+    }
+    
+    // ヘルパー関数：有効なレコードIDかどうかをチェック
+    function isValidRecordId(recordId) {
+      return recordId is string && recordId.size() > 0 && recordId.size() <= 50;
+    }
+    
+    // ヘルパー関数：有効なメンバーIDかどうかをチェック
+    function isValidMemberId(memberId) {
+      return memberId is string && memberId.size() > 0 && memberId.size() <= 50;
+    }
+    
+    // ヘルパー関数：必須フィールドが存在するかチェック
+    function hasRequiredFields(data, requiredFields) {
+      return requiredFields.hasAll(data.keys());
+    }
+    
+    // ヘルパー関数：有効な記録タイプかどうかをチェック
+    function isValidRecordType(recordType) {
+      return recordType in ['feeding', 'diaper', 'sleep', 'wakeup', 'measurement'];
+    }
+    
+    // ヘルパー関数：有効なメンバーロールかどうかをチェック
+    function isValidMemberRole(role) {
+      return role in ['dad', 'mom', 'other'];
+    }
+    
+    // ヘルパー関数：有効な文字列かどうかをチェック
+    function isValidString(value, maxLength) {
+      return value is string && value.size() > 0 && value.size() <= maxLength;
+    }
+    
+    // 家族コレクション
+    match /families/{familyId} {
+      // 家族ドキュメントの読み取り：有効な家族IDのみ
+      allow read: if isValidFamilyId(familyId);
+      
+      // 家族ドキュメントの作成：有効なデータのみ
+      allow create: if isValidFamilyId(familyId) &&
+        hasRequiredFields(resource.data, ['createdAt', 'creatorId']) &&
+        isValidString(resource.data.creatorId, 50);
+      
+      // 家族ドキュメントの更新：作成者のみ（認証なしのため、データの整合性チェックのみ）
+      allow update: if isValidFamilyId(familyId) &&
+        (resource.data.creatorId == null || isValidString(resource.data.creatorId, 50));
+      
+      // 家族ドキュメントの削除：作成者のみ（認証なしのため、基本的なチェックのみ）
+      allow delete: if isValidFamilyId(familyId);
+      
+      // 赤ちゃんサブコレクション
+      match /babies/{babyId} {
+        // 赤ちゃんの読み取り：有効なIDのみ
+        allow read: if isValidFamilyId(familyId) && isValidBabyId(babyId);
+        
+        // 赤ちゃんの作成：有効なデータのみ
+        allow create: if isValidFamilyId(familyId) &&
+          isValidBabyId(babyId) &&
+          hasRequiredFields(resource.data, ['name', 'birthday', 'createdAt', 'updatedAt']) &&
+          isValidString(resource.data.name, 100);
+        
+        // 赤ちゃんの更新：有効なデータのみ
+        allow update: if isValidFamilyId(familyId) &&
+          isValidBabyId(babyId) &&
+          (resource.data.name == null || isValidString(resource.data.name, 100));
+        
+        // 赤ちゃんの削除：基本的なチェックのみ
+        allow delete: if isValidFamilyId(familyId) && isValidBabyId(babyId);
+        
+        // 記録サブコレクション
+        match /records/{recordId} {
+          // 記録の読み取り：有効なIDのみ
+          allow read: if isValidFamilyId(familyId) && 
+            isValidBabyId(babyId) && 
+            isValidRecordId(recordId);
+          
+          // 記録の作成：有効なデータのみ
+          allow create: if isValidFamilyId(familyId) &&
+            isValidBabyId(babyId) &&
+            isValidRecordId(recordId) &&
+            hasRequiredFields(resource.data, ['type', 'babyId', 'createdAt', 'updatedAt', 'createdBy']) &&
+            resource.data.babyId == babyId &&
+            isValidRecordType(resource.data.type) &&
+            isValidString(resource.data.createdBy, 50);
+          
+          // 記録の更新：作成者のみ（認証なしのため、データの整合性チェックのみ）
+          allow update: if isValidFamilyId(familyId) &&
+            isValidBabyId(babyId) &&
+            isValidRecordId(recordId) &&
+            (resource.data.type == null || isValidRecordType(resource.data.type)) &&
+            (resource.data.createdBy == null || isValidString(resource.data.createdBy, 50));
+          
+          // 記録の削除：基本的なチェックのみ
+          allow delete: if isValidFamilyId(familyId) &&
+            isValidBabyId(babyId) &&
+            isValidRecordId(recordId);
+        }
+      }
+      
+      // 家族メンバーサブコレクション
+      match /members/{memberId} {
+        // メンバーの読み取り：有効なIDのみ
+        allow read: if isValidFamilyId(familyId) && isValidMemberId(memberId);
+        
+        // メンバーの作成：有効なデータのみ
+        allow create: if isValidFamilyId(familyId) &&
+          isValidMemberId(memberId) &&
+          hasRequiredFields(resource.data, ['displayName', 'role', 'color', 'joinedAt']) &&
+          isValidString(resource.data.displayName, 50) &&
+          isValidMemberRole(resource.data.role) &&
+          isValidString(resource.data.color, 10);
+        
+        // メンバーの更新：有効なデータのみ
+        allow update: if isValidFamilyId(familyId) &&
+          isValidMemberId(memberId) &&
+          (resource.data.displayName == null || isValidString(resource.data.displayName, 50)) &&
+          (resource.data.role == null || isValidMemberRole(resource.data.role)) &&
+          (resource.data.color == null || isValidString(resource.data.color, 10));
+        
+        // メンバーの削除：基本的なチェックのみ
+        allow delete: if isValidFamilyId(familyId) && isValidMemberId(memberId);
+      }
+    }
+    
+    // その他のすべてのドキュメントは拒否
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
