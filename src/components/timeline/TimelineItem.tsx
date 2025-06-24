@@ -35,7 +35,7 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ record }) => {
           measurements.push(`身長${record.details.measurement.height}cm`);
         }
         if (record.details?.measurement?.weight) {
-          measurements.push(`体重${record.details.measurement.weight}kg`);
+          measurements.push(`体重${record.details.measurement.weight}g`);
         }
         if (record.details?.measurement?.temperature) {
           measurements.push(`体温${record.details.measurement.temperature}℃`);

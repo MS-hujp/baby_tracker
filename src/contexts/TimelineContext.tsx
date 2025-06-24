@@ -184,19 +184,48 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
           break;
 
         case 'measurement':
-          const measurementType = record.details?.measurement?.weight ? 'weight' : 
-                                record.details?.measurement?.height ? 'height' : 'temperature';
-          const value = record.details?.measurement?.weight || 
-                       record.details?.measurement?.height || 
-                       record.details?.measurement?.temperature || 0;
+          // 測定記録を個別に追加（身長、体重、体温を別々の記録として保存）
+          const measurementDetails = record.details?.measurement;
+          const recordIds: string[] = [];
           
-          recordId = await addMeasurementRecord({
-            timestamp: record.timestamp,
-            measurementType: measurementType as any,
-            value: value,
-            unit: measurementType === 'weight' ? 'kg' : measurementType === 'height' ? 'cm' : '°C',
-            notes: ''
-          });
+          // 体重の記録
+          if (measurementDetails?.weight !== undefined && measurementDetails.weight > 0) {
+            const weightRecordId = await addMeasurementRecord({
+              timestamp: record.timestamp,
+              measurementType: 'weight',
+              value: measurementDetails.weight,
+              unit: 'g',
+              notes: ''
+            });
+            recordIds.push(weightRecordId);
+          }
+          
+          // 身長の記録
+          if (measurementDetails?.height !== undefined && measurementDetails.height > 0) {
+            const heightRecordId = await addMeasurementRecord({
+              timestamp: record.timestamp,
+              measurementType: 'height',
+              value: measurementDetails.height,
+              unit: 'cm',
+              notes: ''
+            });
+            recordIds.push(heightRecordId);
+          }
+          
+          // 体温の記録
+          if (measurementDetails?.temperature !== undefined && measurementDetails.temperature > 0) {
+            const temperatureRecordId = await addMeasurementRecord({
+              timestamp: record.timestamp,
+              measurementType: 'temperature',
+              value: measurementDetails.temperature,
+              unit: '°C',
+              notes: ''
+            });
+            recordIds.push(temperatureRecordId);
+          }
+          
+          // 最初の記録IDを返す（複数の記録が作成された場合）
+          recordId = recordIds[0] || '';
           break;
 
         default:
@@ -233,4 +262,4 @@ export const useTimeline = () => {
     throw new Error('useTimeline must be used within a TimelineProvider');
   }
   return context;
-}; 
+};

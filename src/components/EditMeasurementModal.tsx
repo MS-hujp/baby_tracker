@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import {
-    Alert,
-    Modal,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View
+  Alert,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
 } from 'react-native';
+import { useAuth } from '../contexts/AuthContext';
 import { useBaby } from '../contexts/BabyContext';
+import { useTimeline } from '../contexts/TimelineContext';
 
 interface EditMeasurementModalProps {
   visible: boolean;
@@ -26,6 +28,8 @@ export const EditMeasurementModal: React.FC<EditMeasurementModalProps> = ({
   const [value, setValue] = useState(currentValue?.toString() || '');
   const [loading, setLoading] = useState(false);
   const { updateBabyInfo, error } = useBaby();
+  const { addRecord } = useTimeline();
+  const { currentUser } = useAuth();
 
   const handleSave = async () => {
     const numValue = parseFloat(value);
@@ -38,6 +42,25 @@ export const EditMeasurementModal: React.FC<EditMeasurementModalProps> = ({
     try {
       setLoading(true);
       
+      // まずタイムラインに記録を追加
+      await addRecord({
+        type: 'measurement',
+        timestamp: new Date(),
+        user: currentUser || {
+          id: 'current-user',
+          name: 'ユーザー',
+          color: '#FF6B6B'
+        },
+        details: {
+          measurement: {
+            weight: type === 'weight' ? numValue : undefined,
+            height: type === 'height' ? numValue : undefined,
+            temperature: undefined
+          }
+        }
+      });
+      
+      // その後、赤ちゃんの基本情報を更新
       const updateData: any = {};
       if (type === 'weight') {
         updateData.weight = numValue;
@@ -46,10 +69,11 @@ export const EditMeasurementModal: React.FC<EditMeasurementModalProps> = ({
       }
       
       await updateBabyInfo(updateData);
+      
       onClose();
       setValue('');
     } catch (err) {
-      Alert.alert('エラー', '更新に失敗しました');
+      Alert.alert('エラー', '更新に失敗しました', err as any);
     } finally {
       setLoading(false);
     }

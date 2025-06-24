@@ -3,19 +3,19 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from "react";
 import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import {
-  clockIcon,
-  heightIcon,
-  memoIcon,
-  temperatureIcon,
-  weightIcon
+    clockIcon,
+    heightIcon,
+    memoIcon,
+    temperatureIcon,
+    weightIcon
 } from "../assets/icons/icons";
 import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
@@ -32,7 +32,7 @@ const MeasurementScreen = () => {
   const navigation = useNavigation<MeasurementScreenNavigationProp>();
   const { currentUser } = useAuth();
   const { addRecord } = useTimeline();
-  const { babyInfo } = useBaby();
+  const { babyInfo, updateBabyInfo } = useBaby();
   const [selectedTime, setSelectedTime] = useState<Date>(new Date());
   const [height, setHeight] = useState<string>("");
   const [weight, setWeight] = useState<string>("");
@@ -45,23 +45,42 @@ const MeasurementScreen = () => {
     }
   };
 
-  const handleRecord = () => {
+  const handleRecord = async () => {
     if (!currentUser) return;
 
-    addRecord({
-      type: 'measurement',
-      timestamp: selectedTime,
-      user: currentUser,
-      details: {
-        measurement: {
-          height: height ? parseFloat(height) : undefined,
-          weight: weight ? parseFloat(weight) : undefined,
-          temperature: temperature ? parseFloat(temperature) : undefined,
+    try {
+      // 測定記録を追加
+      await addRecord({
+        type: 'measurement',
+        timestamp: selectedTime,
+        user: currentUser,
+        details: {
+          measurement: {
+            height: height ? parseFloat(height) : undefined,
+            weight: weight ? parseFloat(weight) : undefined,
+            temperature: temperature ? parseFloat(temperature) : undefined,
+          },
         },
-      },
-    });
+      });
 
-    navigation.navigate('Home');
+      // 赤ちゃんの基本情報も更新（体重や身長が入力された場合）
+      const updateData: any = {};
+      if (weight && parseFloat(weight) > 0) {
+        updateData.weight = parseFloat(weight);
+      }
+      if (height && parseFloat(height) > 0) {
+        updateData.height = parseFloat(height);
+      }
+
+      if (Object.keys(updateData).length > 0) {
+        await updateBabyInfo(updateData);
+      }
+
+      navigation.navigate('Home');
+    } catch (err) {
+      console.error('Error recording measurement:', err);
+      // エラーはTimelineContextで処理されるので、ここではログのみ
+    }
   };
 
   const handleCancel = () => {
