@@ -11,6 +11,8 @@ export interface TimelineRecord {
     feeding?: {
       type: "breast" | "formula";
       amount?: number;
+      leftDuration?: number;
+      rightDuration?: number;
     };
     sleep?: {
       startTime: Date;

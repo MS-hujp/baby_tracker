@@ -70,7 +70,9 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
                 details: {
                   feeding: {
                     type: record.method === 'breast' ? 'breast' : 'formula',
-                    amount: record.amount
+                    amount: record.amount,
+                    leftDuration: record.leftBreast,
+                    rightDuration: record.rightBreast
                   }
                 }
               };
@@ -154,6 +156,12 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
           // ミルクの場合のみamountを追加
           if (record.details?.feeding?.type === 'formula' && record.details?.feeding?.amount) {
             feedingData.amount = record.details.feeding.amount;
+          }
+          
+          // 母乳の場合、左右の授乳時間を追加
+          if (record.details?.feeding?.type === 'breast') {
+            feedingData.leftBreast = record.details.feeding.leftDuration || 0;
+            feedingData.rightBreast = record.details.feeding.rightDuration || 0;
           }
           
           recordId = await addFeedingRecord(feedingData);

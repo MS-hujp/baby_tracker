@@ -5,10 +5,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from "react";
 import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 import {
-  babyBottleIcon,
-  clockIcon,
-  milkCanIcon,
-  motherIcon,
+    babyBottleIcon,
+    clockIcon,
+    milkCanIcon,
+    motherIcon,
 } from "../assets/icons/icons";
 import Header from "../components/layout/Header";
 import BottomNavigation from "../components/navigation/BottomNavigation";
@@ -61,6 +61,8 @@ const FeedingScreen = () => {
           details: {
             feeding: {
               type: 'breast',
+              leftDuration: leftDuration,
+              rightDuration: rightDuration,
             },
           },
         });

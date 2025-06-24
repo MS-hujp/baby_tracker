@@ -22,8 +22,14 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ record }) => {
     switch (record.type) {
       case 'feeding':
         const type = record.details?.feeding?.type === 'breast' ? '母乳' : 'ミルク';
-        const amount = record.details?.feeding?.amount ? `/${record.details.feeding.amount}ml` : '';
-        return `${type}${amount}`;
+        if (record.details?.feeding?.type === 'breast') {
+          const leftDuration = record.details.feeding.leftDuration || 0;
+          const rightDuration = record.details.feeding.rightDuration || 0;
+          return `(母乳/右${rightDuration}分、左${leftDuration}分)`;
+        } else {
+          const amount = record.details?.feeding?.amount ? `${record.details.feeding.amount}ml` : '';
+          return `(ミルク/${amount})`;
+        }
       case 'diaper':
         const pee = record.details?.diaper?.pee ? 'おしっこ' : '';
         const poop = record.details?.diaper?.poop ? 'うんち' : '';

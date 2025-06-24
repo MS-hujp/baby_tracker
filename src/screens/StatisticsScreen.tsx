@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
 import {
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    SafeAreaView,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { WebView } from "react-native-webview";
 import { aiIcon } from "../assets/icons/icons";
@@ -657,8 +657,17 @@ const StatisticsScreen: React.FC = () => {
           };
         }
 
+        // 過去7日間の日付を生成
+        const measurementDates = [];
+        const measurementToday = new Date();
+        for (let i = 6; i >= 0; i--) {
+          const date = new Date(measurementToday);
+          date.setDate(measurementToday.getDate() - i);
+          measurementDates.push(`${date.getMonth() + 1}/${date.getDate()}`);
+        }
+
         // 測定データを日付で整理
-        const measurementData = records.slice(0, 10).map(record => {
+        const measurementData = records.slice(0, 20).map(record => {
           const recordDate = new Date(record.timestamp);
           const dateStr = `${recordDate.getMonth() + 1}/${recordDate.getDate()}`;
           const measurementDetails = record.details?.measurement;
@@ -671,10 +680,37 @@ const StatisticsScreen: React.FC = () => {
           };
         }).sort((a, b) => a.timestamp - b.timestamp); // 古い順（左）から新しい順（右）にソート
 
-        // 日付とデータを分離
-        const measurementDates = measurementData.map(item => item.date);
-        const heightData = measurementData.map(item => item.height);
-        const weightData = measurementData.map(item => item.weight);
+        // 同じ日付の測定データをマージ
+        const mergedMeasurementData = measurementData.reduce((acc, item) => {
+          const existingItem = acc.find(existing => existing.date === item.date);
+          
+          if (existingItem) {
+            // 既存のアイテムがある場合、0でない値を優先してマージ
+            if (item.height > 0) existingItem.height = item.height;
+            if (item.weight > 0) existingItem.weight = item.weight;
+          } else {
+            // 新しいアイテムの場合、0でない値のみを追加
+            acc.push({
+              date: item.date,
+              height: item.height > 0 ? item.height : 0,
+              weight: item.weight > 0 ? item.weight : 0,
+              timestamp: item.timestamp
+            });
+          }
+          
+          return acc;
+        }, [] as typeof measurementData);
+
+        // 固定された日付配列に対してデータをマッピング
+        const heightData = measurementDates.map(date => {
+          const dataPoint = mergedMeasurementData.find(item => item.date === date);
+          return dataPoint?.height || null; // データがない場合はnull
+        });
+        
+        const weightData = measurementDates.map(date => {
+          const dataPoint = mergedMeasurementData.find(item => item.date === date);
+          return dataPoint?.weight || null; // データがない場合はnull
+        });
 
         return {
           title: {
@@ -714,14 +750,16 @@ const StatisticsScreen: React.FC = () => {
               name: "身長",
               type: "line",
               data: heightData,
-              itemStyle: { color: "#8bc2ef" }
+              itemStyle: { color: "#8bc2ef" },
+              connectNulls: false // null値を接続しない
             },
             {
               name: "体重",
               type: "line",
               yAxisIndex: 1,
               data: weightData,
-              itemStyle: { color: "#f3a95f" }
+              itemStyle: { color: "#f3a95f" },
+              connectNulls: false // null値を接続しない
             }
           ]
         };

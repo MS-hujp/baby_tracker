@@ -39,6 +39,17 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     initializeFamily(familyId);
   }, [familyId]);
 
+  // babyInfoの変更を監視
+  useEffect(() => {
+    if (babyInfo) {
+      console.log('👶 Baby info changed:', {
+        weight: babyInfo.weight,
+        height: babyInfo.height,
+        name: babyInfo.name
+      });
+    }
+  }, [babyInfo]);
+
   // 家族データの初期化
   const initializeFamily = async (currentFamilyId: string) => {
     try {
@@ -59,6 +70,15 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           }
 
           if (familyData) {
+            console.log('📡 Family data received from Firestore:', {
+              babies: familyData.babies.map(baby => ({
+                id: baby.id,
+                name: baby.name,
+                currentWeight: baby.currentWeight,
+                currentHeight: baby.currentHeight
+              }))
+            });
+            
             setFamily(familyData);
             
             // 現在のユーザーを特定
@@ -85,6 +105,16 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 firstBaby,
                 participants // 実際の家族メンバーを使用
               );
+              console.log('🔄 Converting baby info:', {
+                original: {
+                  currentWeight: firstBaby.currentWeight,
+                  currentHeight: firstBaby.currentHeight
+                },
+                converted: {
+                  weight: convertedBabyInfo.weight,
+                  height: convertedBabyInfo.height
+                }
+              });
               setBabyInfo(convertedBabyInfo);
             } else {
               setBabyInfo(null);
@@ -121,6 +151,14 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error('Family ID or Baby ID not found');
       }
       
+      console.log('🔄 Updating baby info:', {
+        current: {
+          weight: babyInfo.weight,
+          height: babyInfo.height
+        },
+        update: data
+      });
+      
       // BabyInfo から Baby 形式に変換
       const updateData: any = {};
       
@@ -131,12 +169,34 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (data.weight !== undefined) updateData.currentWeight = data.weight;
       if (data.height !== undefined) updateData.currentHeight = data.height;
       
+      console.log('📝 Firestore update data:', updateData);
+      
       // Firestoreの赤ちゃん情報を更新
       await babyOperations.updateBaby(familyId, babyInfo.id, updateData);
       
-      console.log('Baby info updated successfully');
+      console.log('✅ Baby info updated successfully in Firestore');
+      
+      // ローカル状態も即座に更新（UIの即座な反映のため）
+      if (babyInfo) {
+        const updatedBabyInfo = {
+          ...babyInfo,
+          ...data
+        };
+        console.log('🔄 Updating local baby info:', {
+          from: {
+            weight: babyInfo.weight,
+            height: babyInfo.height
+          },
+          to: {
+            weight: updatedBabyInfo.weight,
+            height: updatedBabyInfo.height
+          }
+        });
+        setBabyInfo(updatedBabyInfo);
+      }
+      
     } catch (err) {
-      console.error('Error updating baby info:', err);
+      console.error('❌ Error updating baby info:', err);
       setError('赤ちゃん情報の更新に失敗しました');
     } finally {
       setLoading(false);
