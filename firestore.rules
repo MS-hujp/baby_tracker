@@ -2,30 +2,42 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // テストコレクション（開発用）
-    match /test/{document=**} {
-      allow read, write: if true;
-    }
-    
     // 家族コレクション
     match /families/{familyId} {
-      // 家族ドキュメント
-      allow read, write: if true;
+      // 家族ドキュメント - 基本的な読み取りと作成を許可
+      allow read: if true;
+      allow create: if true;
+      allow update: if false;
+      allow delete: if false;
       
       // 赤ちゃんサブコレクション
       match /babies/{babyId} {
-        allow read, write: if true;
+        allow read: if true;
+        allow create: if true;
+        allow update: if true;
+        allow delete: if false;
         
         // 記録サブコレクション
         match /records/{recordId} {
-          allow read, write: if true;
+          allow read: if true;
+          allow create: if true;
+          allow update: if true;
+          allow delete: if false;
         }
       }
       
       // 家族メンバーサブコレクション
       match /members/{memberId} {
-        allow read, write: if true;
+        allow read: if true;
+        allow create: if true;
+        allow update: if true;
+        allow delete: if false;
       }
+    }
+    
+    // テストコレクション（開発用）- 接続テスト用に許可
+    match /test/{document=**} {
+      allow read, write: if true;
     }
     
     // その他のすべてのドキュメントは拒否
