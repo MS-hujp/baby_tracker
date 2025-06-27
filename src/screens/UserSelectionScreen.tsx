@@ -3,9 +3,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { Alert, Button, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { DeviceSessionDebug } from '../components/DeviceSessionDebug';
+import { useAuth } from '../contexts/AuthContext';
 import { useBaby } from '../contexts/BabyContext';
 import { useDeviceSession } from '../hooks/useDeviceSession';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList } from '../types/navigation';
 import { determineAuthFlow } from '../utils/deviceAuth';
 
 type UserSelectionScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -15,6 +16,7 @@ const UserSelectionScreen = () => {
   const navigation = useNavigation<UserSelectionScreenNavigationProp>();
   const { session, loading, error, saveLastUserId } = useDeviceSession();
   const { family, familyId, loading: familyLoading } = useBaby();
+  const { login } = useAuth();
   const [isSelecting, setIsSelecting] = useState(false);
   
   // 認証フロー判定
@@ -32,13 +34,31 @@ const UserSelectionScreen = () => {
       
       console.log('✅ User selection saved successfully');
       
+      // AuthContextにログイン状態を設定
+      const selectedMember = family?.members.find(member => member.id === userId);
+      if (selectedMember) {
+        const userData = {
+          id: selectedMember.id,
+          name: selectedMember.displayName,
+          color: selectedMember.color
+        };
+        console.log('🔐 Setting current user in AuthContext', userData);
+        login(userData);
+      }
+      
       // 成功メッセージを表示
       Alert.alert(
         '✅ ユーザー選択完了',
         `${userName}として登録されました！\n\nStep3.2のテストが正常に完了しました。`,
         [
           {
-            text: 'OK',
+            text: '🏠 ホーム画面へ',
+            onPress: () => {
+              navigation.navigate('Home');
+            }
+          },
+          {
+            text: '戻る',
             onPress: () => {
               navigation.goBack();
             }
@@ -141,6 +161,16 @@ const UserSelectionScreen = () => {
             color="#666"
             disabled={isSelecting}
           />
+
+          {/* ホーム画面への遷移ボタン */}
+          <View style={{ marginTop: 10 }}>
+            <Button
+              title="🏠 ホーム画面へ"
+              onPress={() => navigation.navigate('Home')}
+              color="#28a745"
+              disabled={isSelecting}
+            />
+          </View>
 
           {/* Step3.2テスト情報 */}
           <View style={styles.testContainer}>
