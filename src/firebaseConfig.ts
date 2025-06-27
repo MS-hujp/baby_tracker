@@ -1,3 +1,4 @@
+import { getAnalytics, isSupported } from "firebase/analytics";
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import { collection, doc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore';
 import 'react-native-get-random-values';
@@ -9,6 +10,7 @@ const firebaseConfig = {
   storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 // アプリが既に初期化されている場合は既存のインスタンスを使用し、
@@ -16,6 +18,19 @@ const firebaseConfig = {
 export const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 export const db = getFirestore(app);
+
+// Initialize Analytics only in supported environments
+export const initializeAnalytics = async () => {
+  try {
+    if (await isSupported()) {
+      return getAnalytics(app);
+    }
+    return null;
+  } catch (e) {
+    console.warn('Analytics not supported in this environment');
+    return null;
+  }
+};
 
 // Helper function to create a new family
 export async function createFamily(babyName: string, birthday: Date) {

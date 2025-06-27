@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { AuthProvider } from '../src/contexts/AuthContext';
 import { BabyProvider } from '../src/contexts/BabyContext';
 import { TimelineProvider } from '../src/contexts/TimelineContext';
-import { initializeAnalytics } from '../src/firebase.config';
+import { initializeAnalytics } from '../src/firebaseConfig';
 
 export default function RootLayout() {
   useEffect(() => {
