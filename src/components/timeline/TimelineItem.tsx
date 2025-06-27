@@ -72,7 +72,7 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ record }) => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.userName}>{record.user.name}</Text>
+        <Text style={styles.userName}>{record.user?.name || 'ユーザー'}</Text>
         <Text style={styles.actionText}>
           {getActionText()}
           {getRecordText()}

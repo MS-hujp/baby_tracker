@@ -62,11 +62,14 @@ const TimelineScreen: React.FC = () => {
                   <ActivityIndicator size="large" color="#007AFF" />
                   <Text style={{ marginTop: 10, color: '#666' }}>記録を読み込み中...</Text>
                 </View>
-              ) : records.length === 0 ? (
+              ) : !records || records.length === 0 ? (
                 <Text style={styles.emptyText}>まだ記録がありません</Text>
               ) : (
-                records.map((record) => (
-                  <TimelineItem key={record.id} record={record} />
+                records.map((record, index) => (
+                  <TimelineItem 
+                    key={record.id || `record-${index}`} 
+                    record={record} 
+                  />
                 ))
               )}
             </View>

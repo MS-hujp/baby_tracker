@@ -3,11 +3,11 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useState } from "react";
 import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  View
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    Text,
+    View
 } from "react-native";
 import { clockIcon, diaperIcon, peeIcon, pooIcon } from "../assets/icons/icons";
 import Header from "../components/layout/Header";
@@ -18,6 +18,7 @@ import { useBaby } from '../contexts/BabyContext';
 import { useTimeline } from '../contexts/TimelineContext';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import styles from "../styles/DiaperScreenStyles";
+import { TimeChangeEvent } from "../types/common";
 
 type DiaperScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Diaper'>;
 
@@ -32,6 +33,7 @@ const DiaperScreen = () => {
   });
   const [selectedTime, setSelectedTime] = useState<Date>(new Date());
   const [memo, setMemo] = useState("");
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const headerProps = {
     babyName: "まきちゃん",
@@ -49,7 +51,8 @@ const DiaperScreen = () => {
     }));
   };
 
-  const handleTimeChange = (event: any, selectedDate?: Date) => {
+  const handleTimeChange = (event: TimeChangeEvent, selectedDate?: Date) => {
+    setShowTimePicker(false);
     if (selectedDate) {
       setSelectedTime(selectedDate);
     }

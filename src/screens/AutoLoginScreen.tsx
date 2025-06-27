@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useBaby } from '../contexts/BabyContext';
 import { useDeviceSession } from '../hooks/useDeviceSession';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { FamilyMember } from "../types/family";
 import { determineAuthFlow } from '../utils/deviceAuth';
 
 type AutoLoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -18,7 +19,7 @@ const AutoLoginScreen = () => {
   const { family, familyId, setFamilyId } = useBaby();
   const { login } = useAuth();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<FamilyMember | null>(null);
   
   // 認証フロー判定
   const authFlow = determineAuthFlow(loading, session, error);
@@ -27,7 +28,7 @@ const AutoLoginScreen = () => {
   useEffect(() => {
     if (family && session?.lastUserId) {
       const user = family.members.find(member => member.id === session.lastUserId);
-      setSelectedUser(user);
+      setSelectedUser(user || null);
     }
   }, [family, session?.lastUserId]);
 

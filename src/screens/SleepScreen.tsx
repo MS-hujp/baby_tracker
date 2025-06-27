@@ -19,6 +19,7 @@ import { useBaby } from '../contexts/BabyContext';
 import { useTimeline } from '../contexts/TimelineContext';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import styles from "../styles/SleepScreenStyles";
+import { TimeChangeEvent } from "../types/common";
 
 type SleepScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Sleep'>;
 
@@ -29,8 +30,10 @@ const SleepScreen = () => {
   const { babyInfo } = useBaby();
   const [selectedTime, setSelectedTime] = useState<Date>(new Date());
   const [memo, setMemo] = useState("");
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
-  const handleTimeChange = (event: any, selectedDate?: Date) => {
+  const handleTimeChange = (event: TimeChangeEvent, selectedDate?: Date) => {
+    setShowTimePicker(false);
     if (selectedDate) {
       setSelectedTime(selectedDate);
     }

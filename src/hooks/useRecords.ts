@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useBaby } from '../contexts/BabyContext';
-import { SleepRecord } from '../types/family';
+import { Record, SleepRecord } from '../types/family';
 import { recordOperations } from '../utils/familyFirestore';
 
 // 【重要】Firebase Authentication は絶対に使用禁止
@@ -113,7 +113,7 @@ export function useRecords() {
   }, [familyId, babyInfo?.id]);
 
   // レコードの購読
-  const subscribeToRecords = useCallback((callback: (records: any[]) => void, recordType?: string) => {
+  const subscribeToRecords = useCallback((callback: (records: Record[]) => void, recordType?: string) => {
     if (!familyId || !babyInfo?.id) {
       console.error('Family ID or Baby ID not found for subscription');
       return () => {};

@@ -25,6 +25,7 @@ import BottomNavigation from "../components/navigation/BottomNavigation";
 import { useBaby } from "../contexts/BabyContext";
 import { useTimeline } from "../contexts/TimelineContext";
 import styles from "../styles/HomeScreenStyles";
+import { LatestRecordsByCategory } from "../types/common";
 
 type RootStackParamList = {
   Login: undefined;
@@ -48,9 +49,9 @@ const HomeScreen = () => {
   const { records } = useTimeline();
 
   // カテゴリ別の最新記録を取得
-  const getLatestRecordsByCategory = () => {
+  const getLatestRecordsByCategory = (): LatestRecordsByCategory => {
     const categories = ['feeding', 'sleep', 'diaper', 'wakeup'];
-    const latestRecords: { [key: string]: any } = {};
+    const latestRecords: LatestRecordsByCategory = {};
 
     // 各カテゴリの最新記録を取得
     categories.forEach(category => {

@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { BabyInfo, FamilyWithData, Participant } from '../types/family';
+import { Baby, BabyInfo, FamilyMember, FamilyWithData, Participant } from '../types/family';
 import { babyOperations, familyOperations } from '../utils/familyFirestore';
 import { familyIdResolver } from '../utils/familyIdResolver';
 
@@ -12,7 +12,7 @@ type BabyContextType = {
   error: string | null;
   updateBabyInfo: (data: Partial<BabyInfo>) => Promise<void>;
   addParticipant: (participant: Participant) => Promise<void>;
-  createNewFamily: (babyName: string, birthday: Date, memberData?: any) => Promise<string>;
+  createNewFamily: (babyName: string, birthday: Date, memberData?: FamilyMember[]) => Promise<string>;
   setFamilyId: (familyId: string) => void;
 };
 
@@ -160,7 +160,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       
       // BabyInfo から Baby 形式に変換
-      const updateData: any = {};
+      const updateData: Partial<Baby> = {};
       
       if (data.name !== undefined) updateData.name = data.name;
       if (data.birthdate !== undefined) {
@@ -230,7 +230,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   // 新しい家族の作成（拡張版）
-  const createNewFamily = async (babyName: string, birthday: Date, memberData?: any): Promise<string> => {
+  const createNewFamily = async (babyName: string, birthday: Date, memberData?: FamilyMember[]): Promise<string> => {
     try {
       setLoading(true);
       setError(null);

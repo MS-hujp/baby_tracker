@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { useRecords } from '../hooks/useRecords';
-import { TimelineRecord } from '../types/timeline';
+import { TimelineRecord, TimelineRecordType } from '../types/timeline';
 import { useBaby } from './BabyContext';
 
 type TimelineContextType = {
@@ -52,7 +52,7 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
 
           const baseRecord = {
             id: record.id,
-            type: record.type as any,
+            type: record.type as TimelineRecordType,
             timestamp: timestamp,
             user: {
               id: record.createdBy || 'default-user',
@@ -240,10 +240,15 @@ export const TimelineProvider: React.FC<{ children: ReactNode }> = ({ children }
           throw new Error(`Unsupported record type: ${record.type}`);
       }
 
-      // 新しい記録をローカル状態に追加
+      // 新しい記録をローカル状態に追加（user情報を確実に設定）
       const newRecord: TimelineRecord = {
         ...record,
         id: recordId,
+        user: {
+          id: record.user?.id || 'default-user',
+          name: record.user?.name || 'ユーザー',
+          color: record.user?.color || '#FF6B6B'
+        }
       };
       
       setRecords(prev => [newRecord, ...prev]);

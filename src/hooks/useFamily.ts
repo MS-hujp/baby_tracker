@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FamilyMember } from "../types/family";
 import { familyOperations } from '../utils/familyFirestore';
 
 // 【重要】Firebase Authentication は絶対に使用禁止
@@ -9,16 +10,6 @@ export interface Baby {
   id: string;
   name: string;
   birthday: Date;
-}
-
-export interface FamilyMember {
-  id: string;
-  displayName: string; // 実際の名前
-  role: 'dad' | 'mom' | 'other';
-  email: string;
-  color: string; // UI表示用カラー
-  joinedAt: Date;
-  isCurrentUser: boolean; // 現在のユーザーかどうか
 }
 
 export interface Family {
@@ -70,7 +61,7 @@ export function useFamily(familyId?: string) {
     return () => unsubscribe();
   }, [familyId]);
 
-  const createNewFamily = async (babyName: string, birthday: Date, memberData?: any) => {
+  const createNewFamily = async (babyName: string, birthday: Date, memberData?: FamilyMember[]) => {
     try {
       const newFamilyId = await familyOperations.createFamily(babyName, birthday, memberData);
       return newFamilyId;

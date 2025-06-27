@@ -18,6 +18,7 @@ import { useBaby } from '../contexts/BabyContext';
 import { useTimeline } from '../contexts/TimelineContext';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import styles from "../styles/FeedingScreenStyles";
+import { TimeChangeEvent } from "../types/common";
 
 type FeedingScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Feeding'>;
 
@@ -34,6 +35,7 @@ const FeedingScreen = () => {
   const [leftDuration, setLeftDuration] = useState(0);
   const [rightDuration, setRightDuration] = useState(0);
   const [milkAmount, setMilkAmount] = useState(0);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const toggleFeeding = (type: "motherMilk" | "formulaMilk") => {
     setSelectedFeedings((prev) => ({
@@ -42,7 +44,8 @@ const FeedingScreen = () => {
     }));
   };
 
-  const handleTimeChange = (event: any, selectedDate?: Date) => {
+  const handleTimeChange = (event: TimeChangeEvent, selectedDate?: Date) => {
+    setShowTimePicker(false);
     if (selectedDate) {
       setSelectedTime(selectedDate);
     }

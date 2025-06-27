@@ -25,6 +25,7 @@ import { useBaby } from '../contexts/BabyContext';
 import { useTimeline } from '../contexts/TimelineContext';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import styles from "../styles/MeasurementScreenStyles";
+import { MeasurementUpdateData, TimeChangeEvent } from "../types/common";
 
 type MeasurementScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Measurement'>;
 
@@ -38,8 +39,10 @@ const MeasurementScreen = () => {
   const [weight, setWeight] = useState<string>("");
   const [temperature, setTemperature] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
-  const handleTimeChange = (event: any, selectedDate?: Date) => {
+  const handleTimeChange = (event: TimeChangeEvent, selectedDate?: Date) => {
+    setShowTimePicker(false);
     if (selectedDate) {
       setSelectedTime(selectedDate);
     }
@@ -64,7 +67,7 @@ const MeasurementScreen = () => {
       });
 
       // 赤ちゃんの基本情報も更新（体重や身長が入力された場合）
-      const updateData: any = {};
+      const updateData: MeasurementUpdateData = {};
       if (weight && parseFloat(weight) > 0) {
         updateData.weight = parseFloat(weight);
       }
