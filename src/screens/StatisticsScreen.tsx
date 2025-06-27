@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
 import {
-    SafeAreaView,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { WebView } from "react-native-webview";
 import { aiIcon } from "../assets/icons/icons";
@@ -14,6 +14,7 @@ import TablerIcon from "../components/TablerIcon";
 import { useBaby } from "../contexts/BabyContext";
 import { useTimeline } from "../contexts/TimelineContext";
 import { styles } from "../styles/StatisticsScreenStyles";
+import { log } from "../utils/logger";
 
 type TabType = "feeding" | "sleep" | "diaper" | "measurement";
 
@@ -41,7 +42,7 @@ const StatisticsScreen: React.FC = () => {
       measurement: records.filter(record => record.type === 'measurement')
     };
 
-    console.log('📊 Actual records for statistics:', categorizedRecords);
+    log.debug('Actual records for statistics', categorizedRecords);
     return categorizedRecords;
   }, [records]);
 
@@ -102,6 +103,7 @@ const StatisticsScreen: React.FC = () => {
                 // WebView内でツールチップのフォーマッターを再定義
                 if (option.tooltip) {
                   option.tooltip.formatter = function(params) {
+                    log.debug('Tooltip params', params);
                     // params.value[1]から直接時刻を計算
                     var timeValue = params.value[1];
                     var hours = Math.floor(timeValue);
@@ -117,7 +119,10 @@ const StatisticsScreen: React.FC = () => {
                 
                 myChart.setOption(option);
                 
-                console.log('Chart initialized with size:', myChart.getWidth(), 'x', myChart.getHeight());
+                log.debug('Chart initialized', { 
+                  width: myChart.getWidth(), 
+                  height: myChart.getHeight() 
+                });
 
                 window.ReactNativeWebView.postMessage(JSON.stringify({
                   type: 'chartInitialized',
@@ -149,11 +154,11 @@ const StatisticsScreen: React.FC = () => {
           source={{ html: chartHtml }}
           style={{ width: '100%', height: 700, backgroundColor: 'white' }}
           onLoadEnd={() => {
-            console.log('WebView loaded');
+            log.debug('WebView loaded');
           }}
           onError={(syntheticEvent) => {
             const { nativeEvent } = syntheticEvent;
-            console.warn('WebView error:', nativeEvent);
+            log.warn('WebView error', nativeEvent);
           }}
           javaScriptEnabled={true}
           domStorageEnabled={true}
@@ -163,9 +168,12 @@ const StatisticsScreen: React.FC = () => {
           onMessage={(event) => {
             try {
               const data = JSON.parse(event.nativeEvent.data);
-              console.log('WebView message:', data);
+              log.debug('WebView message', data);
             } catch (error) {
-              console.log('Raw WebView message:', event.nativeEvent.data, 'error:', error);
+              log.debug('Raw WebView message', { 
+                data: event.nativeEvent.data, 
+                error 
+              });
             }
           }}
         />
@@ -248,7 +256,7 @@ const StatisticsScreen: React.FC = () => {
             show: true,
             trigger: 'item',
             formatter: function(params: any) {
-              console.log('Tooltip params:', params);
+              log.debug('Tooltip params', params);
               // params.value[1]から直接時刻を計算
               const timeValue = params.value[1] as number;
               const hours = Math.floor(timeValue);
@@ -390,7 +398,7 @@ const StatisticsScreen: React.FC = () => {
             show: true,
             trigger: 'item',
             formatter: function(params: any) {
-              console.log('Sleep tooltip params:', params);
+              log.debug('Sleep tooltip params', params);
               // params.value[1]から直接時刻を計算
               const timeValue = params.value[1] as number;
               const hours = Math.floor(timeValue);
@@ -399,7 +407,7 @@ const StatisticsScreen: React.FC = () => {
               
               const type = params.seriesName === '睡眠' ? '睡眠' : '起床';
               const result = type + '<br/>' + params.value[0] + ' ' + displayTime;
-              console.log('Sleep tooltip result:', result);
+              log.debug('Sleep tooltip result', { result });
               return result;
             }
           },
@@ -536,7 +544,7 @@ const StatisticsScreen: React.FC = () => {
             show: true,
             trigger: 'item',
             formatter: function(params: any) {
-              console.log('Diaper tooltip params:', params);
+              log.debug('Diaper tooltip params', params);
               // params.value[1]から直接時刻を計算
               const timeValue = params.value[1] as number;
               const hours = Math.floor(timeValue);
@@ -545,7 +553,7 @@ const StatisticsScreen: React.FC = () => {
               
               const type = params.seriesName === 'おしっこ' ? 'おしっこ' : 'うんち';
               const result = type + '<br/>' + params.value[0] + ' ' + displayTime;
-              console.log('Diaper tooltip result:', result);
+              log.debug('Diaper tooltip result', { result });
               return result;
             }
           },
@@ -789,7 +797,7 @@ const StatisticsScreen: React.FC = () => {
   };
 
   const renderTabContent = () => {
-    console.log("Rendering tab content for:", activeTab);
+    log.debug('Rendering tab content', { activeTab });
     const chartOptions = generateChartOptions(activeTab);
     return renderChart(chartOptions);
   };

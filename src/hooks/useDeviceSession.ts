@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
 import { familyIdResolver } from '../utils/familyIdResolver';
+import { log } from '../utils/logger';
 
 // 【重要】Firebase Authentication は絶対に使用禁止
 // バグが発生することが判明しているため、未来永劫導入しない
@@ -45,7 +46,7 @@ export function useDeviceSession() {
       setLoading(true);
       setError(null);
       
-      console.log('🔍 Initializing device session...');
+      log.debug('Initializing device session');
       
       // 各値を並行して取得
       const [
@@ -66,7 +67,7 @@ export function useDeviceSession() {
       const finalDeviceId = deviceId || generateSimpleUUID();
       if (!deviceId) {
         await AsyncStorage.setItem(STORAGE_KEYS.DEVICE_ID, finalDeviceId);
-        console.log('📱 Generated new device ID:', finalDeviceId);
+        log.info('Generated new device ID', { deviceId: finalDeviceId });
       }
 
       // 初回フラグの判定（デバイスIDが生成された = 初回）
@@ -85,7 +86,7 @@ export function useDeviceSession() {
 
       setSession(sessionData);
       
-      console.log('✅ Device session initialized:', {
+      log.info('Device session initialized', {
         deviceId: finalDeviceId,
         familyId: familyId || 'none',
         isFirstTime,
@@ -93,7 +94,7 @@ export function useDeviceSession() {
       });
       
     } catch (err) {
-      console.error('❌ Error initializing device session:', err);
+      log.error('Error initializing device session', err);
       setError('デバイス情報の初期化に失敗しました');
     } finally {
       setLoading(false);
@@ -103,7 +104,7 @@ export function useDeviceSession() {
   // 家族IDの保存（統一システム使用版）
   const saveFamilyId = useCallback(async (familyId: string) => {
     try {
-      console.log('💾 Saving family ID via unified system:', familyId);
+      log.debug('Saving family ID via unified system', { familyId });
       
       // 統一システムを使って家族IDを更新
       const wasUpdated = await familyIdResolver.updateFamilyId(familyId);
@@ -119,7 +120,7 @@ export function useDeviceSession() {
       // 状態を更新
       setSession(prev => {
         if (prev && prev.familyId !== familyId) {
-          console.log('✅ Device session updated with family ID:', familyId);
+          log.info('Device session updated with family ID', { familyId });
           return {
             ...prev,
             familyId,
@@ -130,7 +131,7 @@ export function useDeviceSession() {
       });
       
     } catch (err) {
-      console.error('❌ Error saving family ID:', err);
+      log.error('Error saving family ID', err);
       throw new Error('家族IDの保存に失敗しました');
     }
   }, []);
@@ -150,9 +151,9 @@ export function useDeviceSession() {
         userSelectionCount: newCount
       } : null);
       
-      console.log('👤 Last user ID saved:', userId, 'Selection count:', newCount);
+      log.debug('Last user ID saved', { userId, selectionCount: newCount });
     } catch (err) {
-      console.error('❌ Error saving last user ID:', err);
+      log.error('Error saving last user ID', err);
       throw new Error('ユーザー選択の保存に失敗しました');
     }
   }, [session?.userSelectionCount]);
@@ -166,7 +167,7 @@ export function useDeviceSession() {
                    session.familyId !== null && 
                    session.lastUserId !== null;
     
-    console.log('🤖 Auto login check:', {
+    log.debug('Auto login check', {
       canAuto,
       userSelectionCount: session.userSelectionCount,
       hasFamilyId: !!session.familyId,
@@ -187,10 +188,10 @@ export function useDeviceSession() {
         AsyncStorage.removeItem(STORAGE_KEYS.USER_SELECTION_COUNT)
       ]);
       
-      console.log('🔄 Session reset completed');
+      log.info('Session reset completed');
       await initializeSession();
     } catch (err) {
-      console.error('❌ Error resetting session:', err);
+      log.error('Error resetting session', err);
       setError('セッションのリセットに失敗しました');
     }
   }, [initializeSession]);

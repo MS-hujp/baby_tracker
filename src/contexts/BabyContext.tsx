@@ -2,6 +2,7 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 import { Baby, BabyInfo, FamilyMember, FamilyWithData, Participant } from '../types/family';
 import { babyOperations, familyOperations } from '../utils/familyFirestore';
 import { familyIdResolver } from '../utils/familyIdResolver';
+import { log } from '../utils/logger';
 
 type BabyContextType = {
   babyInfo: BabyInfo | null;
@@ -42,7 +43,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // babyInfoの変更を監視
   useEffect(() => {
     if (babyInfo) {
-      console.log('👶 Baby info changed:', {
+      log.debug('Baby info changed', {
         weight: babyInfo.weight,
         height: babyInfo.height,
         name: babyInfo.name
@@ -56,21 +57,21 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(true);
       setError(null);
       
-      console.log('Initializing family with ID:', currentFamilyId);
+      log.debug('Initializing family', { familyId: currentFamilyId });
       
       // 家族データを購読
       const unsubscribe = familyOperations.subscribeToFamily(
         currentFamilyId,
         (familyData, error) => {
           if (error) {
-            console.error('Error subscribing to family:', error);
+            log.error('Error subscribing to family', error);
             setError('家族情報の取得に失敗しました');
             setLoading(false);
             return;
           }
 
           if (familyData) {
-            console.log('📡 Family data received from Firestore:', {
+            log.debug('Family data received from Firestore', {
               babies: familyData.babies.map(baby => ({
                 id: baby.id,
                 name: baby.name,
@@ -105,7 +106,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 firstBaby,
                 participants // 実際の家族メンバーを使用
               );
-              console.log('🔄 Converting baby info:', {
+              log.debug('Converting baby info', {
                 original: {
                   currentWeight: firstBaby.currentWeight,
                   currentHeight: firstBaby.currentHeight
@@ -131,11 +132,11 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       // クリーンアップ関数を返す
       return () => {
-        console.log('Unsubscribing from family updates');
+        log.debug('Unsubscribing from family updates');
         unsubscribe();
       };
     } catch (err) {
-      console.error('Error initializing family:', err);
+      log.error('Error initializing family', err);
       setError('家族情報の初期化に失敗しました');
       setLoading(false);
     }
@@ -151,7 +152,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error('Family ID or Baby ID not found');
       }
       
-      console.log('🔄 Updating baby info:', {
+      log.debug('Updating baby info', {
         current: {
           weight: babyInfo.weight,
           height: babyInfo.height
@@ -169,12 +170,12 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (data.weight !== undefined) updateData.currentWeight = data.weight;
       if (data.height !== undefined) updateData.currentHeight = data.height;
       
-      console.log('📝 Firestore update data:', updateData);
+      log.debug('Firestore update data', updateData);
       
       // Firestoreの赤ちゃん情報を更新
       await babyOperations.updateBaby(familyId, babyInfo.id, updateData);
       
-      console.log('✅ Baby info updated successfully in Firestore');
+      log.info('Baby info updated successfully in Firestore');
       
       // ローカル状態も即座に更新（UIの即座な反映のため）
       if (babyInfo) {
@@ -182,7 +183,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           ...babyInfo,
           ...data
         };
-        console.log('🔄 Updating local baby info:', {
+        log.debug('Updating local baby info', {
           from: {
             weight: babyInfo.weight,
             height: babyInfo.height
@@ -196,7 +197,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
       
     } catch (err) {
-      console.error('❌ Error updating baby info:', err);
+      log.error('Error updating baby info', err);
       setError('赤ちゃん情報の更新に失敗しました');
     } finally {
       setLoading(false);
@@ -220,9 +221,9 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         participants: updatedParticipants
       });
       
-      console.log('Participant added successfully');
+      log.info('Participant added successfully');
     } catch (err) {
-      console.error('Error adding participant:', err);
+      log.error('Error adding participant', err);
       setError('参加者の追加に失敗しました');
     } finally {
       setLoading(false);
@@ -235,7 +236,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(true);
       setError(null);
       
-      console.log('Creating new family with baby:', babyName, 'and members:', memberData);
+      log.debug('Creating new family with baby', { babyName, memberData });
       const newFamilyId = await familyOperations.createFamily(babyName, birthday, memberData);
       
       // 家族IDの設定は外部で行う（無限ループを避けるため）
@@ -243,7 +244,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       return newFamilyId;
     } catch (err) {
-      console.error('Error creating family:', err);
+      log.error('Error creating family', err);
       setError('家族の作成に失敗しました');
       throw err;
     } finally {
@@ -253,7 +254,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // 家族IDの設定（統一システム使用版 - 安全な非同期実行）
   const setFamilyId = (newFamilyId: string) => {
-    console.log('🏠 Setting family ID via unified system:', newFamilyId);
+    log.debug('Setting family ID via unified system', newFamilyId);
     
     // 非同期処理を内部で実行（awaitしない）
     familyIdResolver.updateFamilyId(newFamilyId)
@@ -262,7 +263,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           // 実際に更新された場合のみローカル状態を更新
           setFamilyIdState(newFamilyId);
         } else {
-          console.log('⚠️ Family ID not updated (already set or updating)');
+          log.warn('Family ID not updated (already set or updating)');
           // 統一システムで更新されなかった場合でも、ローカル状態は同期
           if (familyIdResolver.getCurrentFamilyId() === newFamilyId) {
             setFamilyIdState(newFamilyId);
@@ -270,7 +271,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
       })
       .catch((err) => {
-        console.error('❌ Error setting family ID:', err);
+        log.error('Error setting family ID', err);
         // エラーの場合でもローカル状態は更新（フォールバック）
         setFamilyIdState(newFamilyId);
       });

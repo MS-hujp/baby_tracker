@@ -1,6 +1,8 @@
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { Platform } from 'react-native';
 import { db } from '../firebaseConfig';
 import { FamilyMember } from '../types/family';
+import { log } from './logger';
 
 // 【重要】Firebase Authentication は絶対に使用禁止
 // バグが発生することが判明しているため、未来永劫導入しない
@@ -28,7 +30,7 @@ export const deviceAuth = {
     deviceInfo?: { platform: string; model: string }
   ): Promise<void> {
     try {
-      console.log('🔐 Registering device:', deviceId, 'to family:', familyId);
+      log.info('Registering device', { deviceId, familyId });
       
       const deviceRef = doc(db, 'families', familyId, 'devices', deviceId);
       
@@ -42,10 +44,10 @@ export const deviceAuth = {
       
       await setDoc(deviceRef, registrationData);
       
-      console.log('✅ Device registration completed');
+      log.info('Device registration completed');
       
     } catch (error) {
-      console.error('❌ Error registering device:', error);
+      log.error('Error registering device', error);
       throw new Error('デバイスの登録に失敗しました');
     }
   },
@@ -53,18 +55,18 @@ export const deviceAuth = {
   // デバイスの登録状況を確認
   async checkDeviceRegistration(deviceId: string, familyId: string): Promise<boolean> {
     try {
-      console.log('🔍 Checking device registration:', deviceId);
+      log.debug('Checking device registration', { deviceId });
       
       const deviceRef = doc(db, 'families', familyId, 'devices', deviceId);
       const deviceDoc = await getDoc(deviceRef);
       
       const isRegistered = deviceDoc.exists();
-      console.log(isRegistered ? '✅ Device is registered' : '❌ Device not registered');
+      log.debug('Device registration status', { deviceId, isRegistered });
       
       return isRegistered;
       
     } catch (error) {
-      console.error('❌ Error checking device registration:', error);
+      log.error('Error checking device registration', error);
       return false;
     }
   },
@@ -72,7 +74,7 @@ export const deviceAuth = {
   // デバイスのアクセス時刻を更新
   async updateLastAccess(deviceId: string, familyId: string): Promise<void> {
     try {
-      console.log('⏰ Updating last access for device:', deviceId);
+      log.debug('Updating last access for device', { deviceId });
       
       const deviceRef = doc(db, 'families', familyId, 'devices', deviceId);
       
@@ -83,11 +85,11 @@ export const deviceAuth = {
           lastAccessAt: serverTimestamp()
         }, { merge: true });
         
-        console.log('✅ Last access updated');
+        log.debug('Last access updated', { deviceId });
       }
       
     } catch (error) {
-      console.error('❌ Error updating last access:', error);
+      log.error('Error updating last access', error);
       // アクセス時刻更新の失敗は致命的ではないので、エラーを投げない
     }
   },
@@ -95,7 +97,7 @@ export const deviceAuth = {
   // 家族メンバーから特定のユーザーを取得
   async getFamilyMemberById(familyId: string, userId: string): Promise<FamilyMember | null> {
     try {
-      console.log('👤 Getting family member:', userId, 'from family:', familyId);
+      log.debug('Getting family member', { userId, familyId });
       
       const memberRef = doc(db, 'families', familyId, 'members', userId);
       const memberDoc = await getDoc(memberRef);
@@ -112,27 +114,24 @@ export const deviceAuth = {
           isCurrentUser: data.isCurrentUser || false
         };
         
-        console.log('✅ Family member found:', member.displayName);
+        log.debug('Family member found', { userId, displayName: member.displayName });
         return member;
       } else {
-        console.log('❌ Family member not found');
+        log.warn('Family member not found', { userId, familyId });
         return null;
       }
       
     } catch (error) {
-      console.error('❌ Error getting family member:', error);
+      log.error('Error getting family member', error);
       return null;
     }
   },
 
   // デバイス固有の情報を取得（プラットフォーム情報など）
   getDeviceInfo(): { platform: string; model: string } {
-    // React Native の Platform を使用
-    const Platform = require('react-native').Platform;
-    
     return {
       platform: Platform.OS || 'unknown', // 'ios' or 'android'
-      model: Platform.constants?.Model || `${Platform.OS}_device`
+      model: (Platform.constants as any)?.Model || `${Platform.OS}_device`
     };
   }
 };
