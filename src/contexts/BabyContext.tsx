@@ -26,6 +26,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [currentUser, setCurrentUser] = useState<{ displayName: string; color: string; role: string } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [didRecoverOnce, setDidRecoverOnce] = useState<boolean>(false);
 
   // 家族IDが設定されたときの初期化
   useEffect(() => {
@@ -62,9 +63,22 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       // 家族データを購読
       const unsubscribe = familyOperations.subscribeToFamily(
         currentFamilyId,
-        (familyData, error) => {
+        async (familyData, error) => {
           if (error) {
             log.error('Error subscribing to family', error);
+            // 自動復旧：一度だけ新規家族を作成してやり直す
+            if (!didRecoverOnce) {
+              try {
+                setDidRecoverOnce(true);
+                log.debug('Attempting automatic family recovery (create new family)');
+                const newFamilyId = await familyOperations.createFamily('赤ちゃん', new Date());
+                // 統一システム経由でfamilyIdを更新
+                setFamilyId(newFamilyId);
+                return;
+              } catch (e) {
+                log.error('Automatic family recovery failed', e as any);
+              }
+            }
             setError('家族情報の取得に失敗しました');
             setLoading(false);
             return;
@@ -121,6 +135,18 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               setBabyInfo(null);
             }
           } else {
+            // familyドキュメントが存在しない場合も自動復旧を試行
+            if (!didRecoverOnce) {
+              try {
+                setDidRecoverOnce(true);
+                log.debug('Family missing, attempting automatic family recovery (create new family)');
+                const newFamilyId = await familyOperations.createFamily('赤ちゃん', new Date());
+                setFamilyId(newFamilyId);
+                return;
+              } catch (e) {
+                log.error('Automatic family recovery failed', e as any);
+              }
+            }
             setFamily(null);
             setBabyInfo(null);
             setCurrentUser(null);
@@ -148,14 +174,14 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(true);
       setError(null);
       
-      if (!familyId || !babyInfo?.id) {
-        throw new Error('Family ID or Baby ID not found');
+      if (!familyId) {
+        throw new Error('Family ID not found');
       }
       
       log.debug('Updating baby info', {
         current: {
-          weight: babyInfo.weight,
-          height: babyInfo.height
+          weight: babyInfo?.weight,
+          height: babyInfo?.height
         },
         update: data
       });
@@ -172,8 +198,42 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       log.debug('Firestore update data', updateData);
       
-      // Firestoreの赤ちゃん情報を更新
-      await babyOperations.updateBaby(familyId, babyInfo.id, updateData);
+      // 更新対象のbabyIdを解決（購読中オブジェクトが空の可能性に備える）
+      let targetBabyId = babyInfo?.id;
+      if (!targetBabyId) {
+        log.debug('Resolving babyId from Firestore because local babyInfo.id is missing');
+        const family = await familyOperations.getFamily(familyId);
+        if (!family || family.babies.length === 0) {
+          throw new Error('No baby document found to update');
+        }
+        targetBabyId = family.babies[0].id;
+      }
+      
+      // まずは通常のupdate（ドキュメントがある前提）
+      try {
+        await babyOperations.updateBaby(familyId, targetBabyId!, updateData);
+      } catch (err: any) {
+        // not-found の場合のみ作成（merge）にフォールバック
+        if (err?.code === 'not-found') {
+          log.debug('Baby doc not found, creating with initial data (merge)');
+          const babyRefData: Partial<Baby> = {
+            ...updateData,
+          };
+          const { doc, collection, setDoc, serverTimestamp } = await import('firebase/firestore');
+          const { db } = await import('../firebaseConfig');
+          const babyRef = doc(collection(db, 'families', familyId, 'babies'), targetBabyId!);
+          await setDoc(
+            babyRef,
+            {
+              ...babyRefData,
+              updatedAt: serverTimestamp(),
+            },
+            { merge: true }
+          );
+        } else {
+          throw err;
+        }
+      }
       
       log.info('Baby info updated successfully in Firestore');
       
@@ -197,7 +257,7 @@ export const BabyProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
       
     } catch (err) {
-      log.error('Error updating baby info', err);
+      log.error('Error updating baby info', err as any);
       setError('赤ちゃん情報の更新に失敗しました');
     } finally {
       setLoading(false);

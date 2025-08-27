@@ -15,10 +15,33 @@ type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const LoginScreen = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
   const { session, loading, error } = useDeviceSession();
-  const { setFamilyId, familyId } = useBaby();
+  const { setFamilyId, familyId, error: babyError } = useBaby();
   
   // 認証フロー判定
   const authFlow = determineAuthFlow(loading, session, error);
+
+  // BabyContextのfamilyIdを優先して、実効フローを算出
+  const effectiveFlowState: 'checking' | 'first_time' | 'user_selection' | 'auto_login' | 'error' = (() => {
+    if (loading) return 'checking';
+    // BabyContext側で家族購読に失敗している場合は、家族を作り直すフローに誘導
+    if (babyError) return 'first_time';
+    if (authFlow.state === 'error') return 'error';
+
+    // 既にBabyContextにfamilyIdが存在する場合は、家族作成をスキップ
+    if (familyId) {
+      const canAuto = (session?.userSelectionCount || 0) >= 2 && !!session?.lastUserId;
+      return canAuto ? 'auto_login' : 'user_selection';
+    }
+
+    // BabyContextにfamilyIdが無くても、セッション側にfamilyIdがあればスキップ
+    if (session?.familyId) {
+      const canAuto = (session.userSelectionCount || 0) >= 2 && !!session.lastUserId;
+      return canAuto ? 'auto_login' : 'user_selection';
+    }
+
+    // どちらにもfamilyIdがない場合のみ初回扱い
+    return authFlow.state;
+  })();
 
   // 🔧 無限ループ対策：家族ID統一システムを使用
   useEffect(() => {
@@ -70,9 +93,9 @@ const LoginScreen = () => {
           {/* 認証フロー状態表示 */}
           <View style={styles.flowStatusContainer}>
             <Text style={styles.flowStatusTitle}>🚀 現在の認証フロー状態</Text>
-            <View style={[styles.flowStatusBadge, getFlowStatusStyle(authFlow.state)]}>
+            <View style={[styles.flowStatusBadge, getFlowStatusStyle(effectiveFlowState)]}>
               <Text style={styles.flowStatusText}>
-                {getFlowStatusLabel(authFlow.state)}
+                {getFlowStatusLabel(effectiveFlowState)}
               </Text>
             </View>
             {/* 詳細情報の追加 */}
@@ -90,8 +113,8 @@ const LoginScreen = () => {
             )}
           </View>
 
-          {/* 家族作成ボタン */}
-          {authFlow.state === 'first_time' && (
+          {/* 家族作成ボタン（本当に初回のみ） */}
+          {effectiveFlowState === 'first_time' && (
             <View style={styles.actionContainer}>
               <Text style={styles.actionTitle}>✨ 初回起動です</Text>
               <Text style={styles.actionDescription}>
@@ -106,7 +129,7 @@ const LoginScreen = () => {
           )}
 
           {/* ユーザー選択ボタン */}
-          {authFlow.state === 'user_selection' && (
+          {effectiveFlowState === 'user_selection' && (
             <View style={styles.actionContainer}>
               <Text style={styles.actionTitle}>👤 ユーザー選択が必要です</Text>
               <Text style={styles.actionDescription}>
@@ -121,7 +144,7 @@ const LoginScreen = () => {
           )}
 
           {/* 自動ログインボタン */}
-          {authFlow.state === 'auto_login' && (
+          {effectiveFlowState === 'auto_login' && (
             <View style={styles.actionContainer}>
               <Text style={styles.actionTitle}>🔐 自動ログイン可能です</Text>
               <Text style={styles.actionDescription}>
@@ -136,11 +159,11 @@ const LoginScreen = () => {
           )}
 
           {/* その他の状態（完了済み・テスト用） */}
-          {authFlow.state !== 'first_time' && authFlow.state !== 'checking' && authFlow.state !== 'user_selection' && authFlow.state !== 'auto_login' && (
+          {effectiveFlowState !== 'first_time' && effectiveFlowState !== 'checking' && effectiveFlowState !== 'user_selection' && effectiveFlowState !== 'auto_login' && (
             <View style={styles.actionContainer}>
               <Text style={styles.actionTitle}>✅ 認証フロー完了</Text>
               <Text style={styles.actionDescription}>
-                認証システムが完了しています。{'\n'}
+                認証システムが完了しています。{"\n"}
                 各機能をテストできます。
               </Text>
               <Button

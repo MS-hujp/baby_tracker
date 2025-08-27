@@ -9,6 +9,7 @@ import { useDeviceSession } from '../hooks/useDeviceSession';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { FamilyMember } from "../types/family";
 import { determineAuthFlow } from '../utils/deviceAuth';
+import { familyOperations } from '../utils/familyFirestore';
 
 type AutoLoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -38,17 +39,44 @@ const AutoLoginScreen = () => {
       
       console.log('🔐 Starting auto login process...');
       
-      if (!selectedUser || !session?.familyId) {
-        throw new Error('選択済みユーザーまたは家族情報が見つかりません');
+      if (!session?.familyId) {
+        throw new Error('家族情報が見つかりません');
+      }
+
+      // 直近ユーザーがいない場合や、家族データから見つからない場合は復旧作成
+      let userToLogin = selectedUser;
+      if (!userToLogin && session.lastUserId) {
+        console.log('ℹ️ Last user not found in family, creating a new member document...');
+        await familyOperations.ensureFamilyAndMember(
+          session.familyId,
+          {
+            id: session.lastUserId,
+            displayName: 'ユーザー',
+            isCurrentUser: true
+          }
+        );
+        userToLogin = {
+          id: session.lastUserId,
+          displayName: 'ユーザー',
+          role: 'dad',
+          email: '',
+          color: '#FF6B6B',
+          isCurrentUser: true,
+          joinedAt: new Date()
+        } as any;
+      }
+
+      if (!userToLogin) {
+        throw new Error('選択済みユーザーが見つかりません');
       }
       
-      console.log('👤 Auto logging in as:', selectedUser.displayName);
+      console.log('👤 Auto logging in as:', userToLogin.displayName);
       
       // Step3.3：AuthContextのlogin関数を使用
       const userData = {
-        id: selectedUser.id,
-        name: selectedUser.displayName,
-        color: selectedUser.color
+        id: userToLogin.id,
+        name: userToLogin.displayName,
+        color: userToLogin.color
       };
       
       console.log('✅ Setting current user in AuthContext:', userData);
@@ -65,7 +93,7 @@ const AutoLoginScreen = () => {
       // 成功メッセージを表示してホーム画面に遷移
       Alert.alert(
         '✅ ログイン完了',
-        `${selectedUser.displayName}としてログインしました！\n\nStep3.3のテストが正常に完了しました。`,
+        `${userToLogin.displayName}としてログインしました！\n\nStep3.3のテストが正常に完了しました。`,
         [
           {
             text: 'ホーム画面へ',

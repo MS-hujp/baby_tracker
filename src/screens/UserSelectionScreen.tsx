@@ -8,6 +8,7 @@ import { useBaby } from '../contexts/BabyContext';
 import { useDeviceSession } from '../hooks/useDeviceSession';
 import { RootStackParamList } from '../types/navigation';
 import { determineAuthFlow } from '../utils/deviceAuth';
+import { familyOperations } from '../utils/familyFirestore';
 
 type UserSelectionScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -35,7 +36,30 @@ const UserSelectionScreen = () => {
       console.log('✅ User selection saved successfully');
       
       // AuthContextにログイン状態を設定
-      const selectedMember = family?.members.find(member => member.id === userId);
+      let selectedMember = family?.members.find(member => member.id === userId);
+      if (!selectedMember && session?.familyId) {
+        // 過去ユーザーが存在しない場合は、ドキュメントを作成して復旧
+        console.log('ℹ️ Selected user not found in family, creating a new member document...');
+        await familyOperations.ensureFamilyAndMember(
+          session.familyId,
+          {
+            id: userId,
+            displayName: userName,
+            isCurrentUser: true
+          }
+        );
+        // 再検索は購読で反映されるが、即時ログインのためローカルで組み立て
+        selectedMember = {
+          id: userId,
+          displayName: userName,
+          role: 'dad',
+          email: '',
+          color: '#FF6B6B',
+          isCurrentUser: true,
+          joinedAt: new Date()
+        } as any;
+      }
+
       if (selectedMember) {
         const userData = {
           id: selectedMember.id,

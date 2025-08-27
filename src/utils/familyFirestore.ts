@@ -188,6 +188,55 @@ export const familyOperations = {
         callback(null, error);
       }
     );
+  },
+
+  // Ensure a family and a member exist for given IDs (recovery path)
+  async ensureFamilyAndMember(
+    familyId: string,
+    member: { id: string; displayName: string; role?: 'dad' | 'mom' | 'other'; color?: string; isCurrentUser?: boolean },
+    babyName: string = '赤ちゃん',
+    birthday: Date = new Date()
+  ): Promise<void> {
+    const familyRef = doc(collection(db, 'families'), familyId);
+    const babiesRef = collection(familyRef, 'babies');
+    const membersRef = collection(familyRef, 'members');
+
+    // 1) Create family doc if missing
+    await setDoc(
+      familyRef,
+      {
+        createdAt: serverTimestamp(),
+        creatorId: 'default-user',
+      },
+      { merge: true }
+    );
+
+    // 2) Create at least one baby if none exists
+    const babiesSnap = await getDocs(babiesRef);
+    if (babiesSnap.empty) {
+      const babyRef = doc(babiesRef);
+      await setDoc(babyRef, {
+        name: babyName,
+        birthday,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    }
+
+    // 3) Create member doc if missing
+    const memberRef = doc(membersRef, member.id);
+    await setDoc(
+      memberRef,
+      {
+        displayName: member.displayName,
+        role: member.role || 'dad',
+        email: '',
+        color: member.color || '#FF6B6B',
+        isCurrentUser: member.isCurrentUser ?? true,
+        joinedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
   }
 };
 
