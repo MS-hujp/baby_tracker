@@ -2,7 +2,7 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Please see [About App](https://drive.google.com/drive/folders/1vd_FZ_HnD3h_qeYUnTJyUC6-jlL-vsrO?usp=sharing) at first.
+# Please see [About App](https://drive.google.com/drive/folders/1vd_FZ_HnD3h_qeYUnTJyUC6-jlL-vsrO?usp=sharing) at first 📱👀
 
 ## Get started
 
