@@ -4,41 +4,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#ffe5e5",
-    padding: 10,
+    paddingTop: 10,
+    paddingHorizontal: 10,
+    paddingBottom: 0,
   },
-  header: {
-    backgroundColor: "#ffadad",
-    padding: 10,
-    borderRadius: 20,
-    marginBottom: 20,
+  scrollView: {
+    flex: 1,
   },
-  profileContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "90%",
-  },
-  profileName: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginLeft: 10,
-    color: "#333",
-  },
-  profileAge: {
-    fontSize: 16,
-    color: "#555",
-  },
-  participants: {
-    flexDirection: "row",
-    marginTop: 10,
-  },
-  iconButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginRight: 10,
-  },
-  participantText: {
-    fontSize: 16,
-    marginLeft: 5,
+  innerContainer: {
+    paddingHorizontal: 10,
   },
   infoBox: {
     backgroundColor: "#fff",
@@ -51,29 +25,43 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     color: "#333",
   },
-  recordSection: {
+  recordSectionContainer: {
     backgroundColor: "#fff",
+    marginBottom: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     height: "auto",
+    borderRadius: 20,
+  },
+  recordSectionTitle: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    marginBottom: 5,
+  },
+  recordSectionTitleText: {
+    color: "#454444",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  recordSection: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    borderRadius: 20,
     gap: 5,
-    marginBottom: 20,
   },
   recordColumn: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    height: "100%",
+    height: "auto",
     width: "60%",
   },
   recordRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    height: "45%",
+    height: "auto",
     width: "100%",
     gap: 5,
   },
@@ -83,7 +71,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     borderRadius: 10,
-    height: "100%",
     width: "60%",
     paddingVertical: 5,
     paddingHorizontal: 3,
@@ -97,7 +84,7 @@ const styles = StyleSheet.create({
   recordMeasurements: {
     display: "flex",
     width: "auto",
-    height: "100%",
+    height: "auto",
     flexDirection: "column",
     justifyContent: "space-between",
     backgroundColor: "#73ace6",
@@ -113,11 +100,23 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     gap: 5,
   },
-  timeLineSection: {
+  timeLineSectionContainer: {
     backgroundColor: "#fff",
+    marginBottom: 10,
+    paddingVertical: 5,
     height: "auto",
     borderRadius: 20,
-    marginBottom: 20,
+  },
+  timeLineSection: {
+  },
+  timeLineSectionTitle: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    marginHorizontal: 10,
+    marginBottom: 5,
+    gap: 5,
   },
   timeLineItems: {
     flexDirection: "column",
@@ -143,43 +142,19 @@ const styles = StyleSheet.create({
     color: "#454444",
     fontSize: 14,
     fontWeight: "bold",
-    width: "55%",
+    width: "30%",
   },
   timestamp: {
     color: "#454444",
     fontSize: 14,
     fontWeight: "bold",
-    width: "20%",
+    width: "30%",
   },
   logText:{
     color: "rgba(69, 68, 68, 0.5)",
     fontSize: 10,
-    width: "25%",
-  },
-  navigation: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 20,
-  },
-  bottomNavwrap: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  bottomNav: {
-    width: 45,
-    height: 45,
-    borderRadius: 10,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  navButton: {
-    backgroundColor: "#eee",
-    padding: 10,
-    borderRadius: 10,
-  },
+    width: "30%",
+  }
 });
 
 export default styles;

@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ms2025.babytrackerapp",
+      "bundleIdentifier": "com.shiroikumo.babytrackerapp",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }

@@ -117,3 +117,151 @@ export const statisticsIcon = `
 <path d="M4 20h14" />
 </svg>
 `;
+
+// 記録アイコン (add-record)
+export const addRecordIcon = `
+<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round">
+<path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+<path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+<path d="M16 5l3 3" />
+</svg>
+`;
+
+// 母乳アイコン (mother)
+export const motherIcon = `
+<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round">
+<path d="M10 16v5" />
+<path d="M14 16v5" />
+<path d="M8 16h8l-2 -7h-4z" />
+<path d="M5 11c1.667 -1.333 3.333 -2 5 -2" />
+<path d="M19 11c-1.667 -1.333 -3.333 -2 -5 -2" />
+<path d="M12 4m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+</svg>
+`;
+
+// ミルクアイコン (milk)
+export const milkCanIcon = `
+<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round">
+<path d="M10 14h.01" />
+<path d="M14 14h.01" />
+<path d="M10 17a3.5 3.5 0 0 0 4 0" />
+<path d="M4 6c0 1.657 3.582 3 8 3s8 -1.343 8 -3s-3.582 -3 -8 -3s-8 1.343 -8 3" />
+<path d="M4 6v12c0 1.657 3.582 3 8 3s8 -1.343 8 -3v-12" />
+</svg>
+`;
+
+// 時計アイコン (clock)
+export const clockIcon = `
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 7V12L10.5 14.5M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+
+// おしっこアイコン (pee)
+export const peeIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-droplet">
+<path d="M7.502 19.423c2.602 2.105 6.395 2.105 8.996 0c2.602 -2.105 3.262 -5.708 1.566 -8.546l-4.89 -7.26c-.42 -.625 -1.287 -.803 -1.936 -.397a1.376 1.376 0 0 0 -.41 .397l-4.893 7.26c-1.695 2.838 -1.035 6.441 1.567 8.546z" />
+</svg>
+`;
+
+// うんちアイコン (poo)
+export const pooIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-poo">
+<path d="M10 12h.01" />
+<path d="M14 12h.01" />
+<path d="M10 16a3.5 3.5 0 0 0 4 0" />
+<path d="M11 4c2 0 3.5 1.5 3.5 4l.164 0a2.5 2.5 0 0 1 2.196 3.32a3 3 0 0 1 1.615 3.063a3 3 0 0 1 -1.299 5.607l-.176 0h-10a3 3 0 0 1 -1.474 -5.613a3 3 0 0 1 1.615 -3.062a2.5 2.5 0 0 1 2.195 -3.32l.164 0c1.5 0 2.5 -2 1.5 -4z" />
+</svg>
+`;
+
+// メモアイコン (memo)
+export const memoIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+<path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" />
+<path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" />
+<path d="M9 12h6" />
+<path d="M9 16h6" />
+</svg>
+`;
+
+// カレンダーアイコン
+export const calendarIcon = `
+<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round">
+<path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
+<path d="M16 3v4" />
+<path d="M8 3v4" />
+<path d="M4 11h16" />
+<path d="M7 14h.013" />
+<path d="M10.01 14h.005" />
+<path d="M13.01 14h.005" />
+<path d="M16.015 14h.005" />
+<path d="M13.015 17h.005" />
+<path d="M7.01 17h.005" />
+<path d="M10.01 17h.005" />
+</svg>
+`;
+
+// AI アイコン (ai)
+export const aiIcon = `
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="800px" height="800px" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" stroke-width="3" stroke="#000000" fill="none">
+<circle cx="34.52" cy="11.43" r="5.82"/>
+<circle cx="53.63" cy="31.6" r="5.82"/>
+<circle cx="34.52" cy="50.57" r="5.82"/>
+<circle cx="15.16" cy="42.03" r="5.82"/>
+<circle cx="15.16" cy="19.27" r="5.82"/>
+<circle cx="34.51" cy="29.27" r="4.7"/>
+<line x1="20.17" y1="16.3" x2="28.9" y2="12.93"/>
+<line x1="38.6" y1="15.59" x2="49.48" y2="27.52"/>
+<line x1="50.07" y1="36.2" x2="38.67" y2="46.49"/>
+<line x1="18.36" y1="24.13" x2="30.91" y2="46.01"/>
+<line x1="20.31" y1="44.74" x2="28.7" y2="48.63"/>
+<line x1="17.34" y1="36.63" x2="31.37" y2="16.32"/>
+<line x1="20.52" y1="21.55" x2="30.34" y2="27.1"/>
+<line x1="39.22" y1="29.8" x2="47.81" y2="30.45"/>
+<line x1="34.51" y1="33.98" x2="34.52" y2="44.74"/>
+</svg>
+`;
+
+// 体温アイコン (temperature)
+export const temperatureIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+<path d="M10 13.5a4 4 0 1 0 4 0v-8.5a2 2 0 0 0 -4 0v8.5" />
+<path d="M10 9l4 0" />
+</svg>
+`;
+
+// 誕生日アイコン (birthday)
+export const birthdayIcon = `
+<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">
+<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+<path d="M3 20h18v-8a3 3 0 0 0 -3 -3h-12a3 3 0 0 0 -3 3v8z" />
+<path d="M3 14.803c.312 .135 .654 .204 1 .197a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1c.35 .007 .692 -.062 1 -.197" />
+<path d="M12 4l1.465 1.638a2 2 0 1 1 -3.015 .099l1.55 -1.737z" />
+</svg>
+`;
+
+// ユーザーアイコン (person)
+export const personIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+`;
+
+// ユーザー追加アイコン (user-plus)
+export const userPlusIcon = `
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+  <path d="M16 19h6" />
+  <path d="M19 16v6" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4" />
+</svg>
+`;
+
+
+
+
